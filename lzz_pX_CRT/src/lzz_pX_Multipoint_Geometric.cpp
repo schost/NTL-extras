@@ -386,3 +386,23 @@ void zz_pX_Multipoint_Geometric::interpolate(zz_pX& f, const vec_zz_p& val) cons
     f.rep[i] = coeff(R, i) * inverse_derivative[i];
   f.normalize();
 }
+
+/*------------------------------------------------------------*/
+/* a naive conversion to a dense matrix                       */
+/* maybe promote to all multipoint matrices?                  */
+/*------------------------------------------------------------*/
+void to_dense(Mat<zz_p>& M, const zz_pX_Multipoint_Geometric& X){
+   long n = X.n;
+   zz_pX f;
+   set(f);
+   Vec<zz_p> v;
+   v.SetLength(n);
+   M.SetDims(n, n);
+   
+   for (long i = 0; i < n; i++){
+     X.evaluate(v, f);
+     for (long j = 0; j < n; j++)
+       M[j][i] = v[j];
+     f <<= 1;
+  }
+}

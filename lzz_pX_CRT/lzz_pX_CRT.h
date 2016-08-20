@@ -139,6 +139,11 @@ class zz_pX_Multipoint_Geometric : public zz_pX_Multipoint{
 };
 
 
+/*------------------------------------------------------------*/
+/* a naive conversion to a dense matrix                       */
+/* maybe promote to all multipoint matrices?                  */
+/*------------------------------------------------------------*/
+void to_dense(Mat<zz_p>& M, const zz_pX_Multipoint_Geometric& X);
 
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
