@@ -212,9 +212,8 @@ void generators(Mat<zz_p>& G, Mat<zz_p>& H, const mosaic_hankel& M);
 /* - CL is expected to have generic rank profile      */
 /*----------------------------------------------------*/
 void to_cauchy_grp(cauchy_like_geometric_special& CL, 
-		   Mat<zz_p>& X, Mat<zz_p>& Y, 
 		   zz_pX_Multipoint_Geometric& X_int, zz_pX_Multipoint_Geometric& Y_int,
-		   Vec<zz_p>& e, Vec<zz_p>& f,
+		   Vec<zz_p> &e, Vec<zz_p> &f,
 		   const mosaic_hankel& M);
 
 #endif

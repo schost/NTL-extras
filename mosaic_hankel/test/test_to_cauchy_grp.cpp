@@ -2,9 +2,8 @@
 #include <NTL/mat_lzz_p.h>
 #include <assert.h>
 
-#include "lzz_pX_extra.h"
 #include "mosaic_hankel.h"
-#include "geometric_interpolation.h"
+#include "lzz_pX_CRT.h"
 #include "cauchy_geometric_special.h"
 
 NTL_CLIENT
@@ -78,9 +77,9 @@ void check(int opt){
       cauchy_like_geometric_special CL;
       Mat<zz_p> X, Y;
       Vec<zz_p> e, f;
-      geometric_interpolation_t X_int, Y_int;
+      zz_pX_Multipoint_Geometric X_int, Y_int;
       
-      to_cauchy_grp(CL, X, Y, X_int, Y_int, e, f, MH);
+      to_cauchy_grp(CL, X_int, Y_int, e, f, MH);
 
       Mat<zz_p> MM, MC, MX_i, MY_i, Me, Mf;
       to_dense(MM, MH);
