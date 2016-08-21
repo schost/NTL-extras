@@ -243,13 +243,14 @@ void generators(Mat<zz_p>& G, Mat<zz_p>& H, const mosaic_hankel& M){
   }
 }
 
-/*----------------------------------------------------*/
-/* preconditions M                                    */
-/* builds the matrix CL = X_int M Y_int, where:       */
-/* - X_int, Y_int are geometric interpolation         */
-/* - CL is cauchy-like special                        */
-/* - CL is expected to have generic rank profile      */
-/*----------------------------------------------------*/
+/*------------------------------------------------------------------*/
+/* preconditions M                                                  */
+/* builds the matrix CL = (D_e X_int) M (D_f Y_int)^t, where:       */
+/* - X_int, Y_int are geometric interpolation                       */
+/* - D_e, D_f are diagonal matrix built on vectors e and f          */
+/* - CL is cauchy-like special                                      */
+/* - CL is expected to have generic rank profile                    */
+/*------------------------------------------------------------------*/
 void to_cauchy_grp(cauchy_like_geometric_special& CL, 
 		   zz_pX_Multipoint_Geometric& X_int, zz_pX_Multipoint_Geometric& Y_int,
 		   Vec<zz_p> &e, Vec<zz_p> &f,
