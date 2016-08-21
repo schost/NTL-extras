@@ -4,6 +4,8 @@
 #include <NTL/lzz_pX.h>
 #include <NTL/mat_lzz_p.h>
 
+#define THRESHOLD 100
+
 NTL_CLIENT
 
 /*----------------------------------------------------*/
@@ -123,7 +125,7 @@ long invert(cauchy_like_geometric_special& Cinv,
 /* O(alpha^2 M(n)log(n)) algorithm                   */
 /*---------------------------------------------------*/
 long invert_fast(cauchy_like_geometric_special& Cinv,
-		 const cauchy_like_geometric_special& CL);
+		 const cauchy_like_geometric_special& CL, const long thresh = -1);
 
 /*---------------------------------------------------*/
 /* computes M*input                                  */

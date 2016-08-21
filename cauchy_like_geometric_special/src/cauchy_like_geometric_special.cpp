@@ -4,11 +4,26 @@
 #include "vec_lzz_p_extra.h"
 #include "cauchy_geometric_special.h"
 
-#define THRESHOLD 100
-
 NTL_CLIENT
 
 
+/*-------------------------------------------*/
+/* sample runs, with approximate thresholds  */
+/* 4  100                                    */
+/* 9  250                                    */
+/* 14  250                                   */
+/* 19  340                                   */
+/* 24  400                                   */
+/* 29  400                                   */
+/* 34  430                                   */
+/* 39  550                                   */
+/* 44  640                                   */
+/* 49  670                                   */
+/*-------------------------------------------*/
+static 
+long threshold(long alpha){
+  return 100 + alpha*12;
+}
 
 /*------------------------------------------------------------*/
 /* A is such that DA - AD' = G.H^t                            */
@@ -239,10 +254,10 @@ long invert(cauchy_like_geometric_special& Cinv,
 /*---------------------------------------------------*/
 long invert_fast_raw(long *Yp, long *Zp, const long alpha,
 		     const cauchy_geometric_special& C,
-		     const long i0, const long i1, const long j0, const long j1){
+		     const long i0, const long i1, const long j0, const long j1, const long thresh){
   
   const long N = min(i1-i0, j1-j0);
-  if (N < THRESHOLD)
+  if (N < thresh)
     return invert_raw(Yp, Zp, alpha, C, i0, i1, j0, j1);
 
   const long n = C.n;
@@ -265,7 +280,7 @@ long invert_fast_raw(long *Yp, long *Zp, const long alpha,
     H1[i] = Zp[i];
   }
   
-  long r = invert_fast_raw(G1, H1, alpha, C, i0, i0+N1, j0, j0+N1);
+  long r = invert_fast_raw(G1, H1, alpha, C, i0, i0+N1, j0, j0+N1, thresh);
 
   // case 1: we found that we do not have grp. abort.
   if (r == -1){
@@ -337,7 +352,7 @@ long invert_fast_raw(long *Yp, long *Zp, const long alpha,
   }
 
   // looks at the whole matrix
-  r = invert_fast_raw(iSG, iSH, alpha, C, i0+N1, i1, j0+N1, j1);
+  r = invert_fast_raw(iSG, iSH, alpha, C, i0+N1, i1, j0+N1, j1, thresh);
 
   if (r == -1){
     delete[] G1;
@@ -358,11 +373,17 @@ long invert_fast_raw(long *Yp, long *Zp, const long alpha,
 /* O(alpha^2 M(n)log(n)) algorithm                   */
 /*---------------------------------------------------*/
 long invert_fast(cauchy_like_geometric_special& Cinv,
-		 const cauchy_like_geometric_special& CL){
+		 const cauchy_like_geometric_special& CL, const long thresh){
 
   long n = CL.NumRows();
   long m = CL.NumCols();
   long alpha = CL.Alpha();
+
+  long do_thresh;
+  if (thresh == -1)
+    do_thresh = threshold(alpha);
+  else
+    do_thresh = thresh;
 
   long *Yp = new long[n*alpha];
   for (long i = 0; i < n*alpha; i++)
@@ -372,7 +393,7 @@ long invert_fast(cauchy_like_geometric_special& Cinv,
   for (long i = 0; i < m*alpha; i++)
     Zp[i] = CL.H[i];
 
-  long r = invert_fast_raw(Yp, Zp, alpha, CL.C, 0, n, 0, m);
+  long r = invert_fast_raw(Yp, Zp, alpha, CL.C, 0, n, 0, m, do_thresh);
 
   if (r == -1){
     delete[] Yp;
