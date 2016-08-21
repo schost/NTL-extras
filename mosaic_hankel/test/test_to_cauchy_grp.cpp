@@ -72,8 +72,6 @@ void check(int opt){
     
     if (opt == 1){
 
-      // long n = MH.NumRows(), m = MH.NumCols();
-
       cauchy_like_geometric_special CL;
       Mat<zz_p> X, Y;
       Vec<zz_p> e, f;
