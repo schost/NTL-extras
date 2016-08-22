@@ -52,15 +52,7 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
 
   ZZ_pX_Multipoint_FFT(){}
 
-  ZZ_pX_Multipoint_FFT(const ZZ_p & w, long n){
-    this->k = NextPowerOfTwo(n);
-    this->s = 1L << k;
-    this->n = n;
-    if (ZZ_pInfo->p_info == NULL){
-      cerr << "Attempt to init a ZZ_pX_Multipoint_FFT without ZZ_p::FFTInit\n";
-      exit(-1);
-    }
-  }
+  ZZ_pX_Multipoint_FFT(const ZZ_p & w, long n);
 
   /*------------------------------------------------------------*/
   /* basic operations                                           */
@@ -75,6 +67,7 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
 
  private:
   long k, s;
+  Vec<Vec<ZZ_p>> powersW;
 };
 
 
