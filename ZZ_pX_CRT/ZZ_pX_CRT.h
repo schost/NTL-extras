@@ -27,7 +27,6 @@ class ZZ_pX_Multipoint{
   /* basic operations                                           */
   /*------------------------------------------------------------*/
   virtual void evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const = 0;
-  virtual void evaluate(Vec<Vec<ZZ_p>>& val, const Vec<ZZ_pX>& f) const = 0;
   virtual void interpolate(ZZ_pX& f, const Vec<ZZ_p>& val) const = 0;
  
   /*------------------------------------------------------------*/
@@ -66,10 +65,21 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
   ~ZZ_pX_Multipoint_FFT(){};
 
  private:
-  long k, s;
+  long k, max_n;
   Vec<Vec<ZZ_p>> powersW;
+  Vec<long> rev;
 };
 
+/*------------------------------------------------------------*/
+/* finds a root of unity of order s mod p                     */
+/* assumes s is a power of 2                                  */
+/*------------------------------------------------------------*/
+long find_root_of_unity(long p, long s);
 
+/*------------------------------------------------------------*/
+/* suppose that omega is a root of unity of order s mod p     */  
+/* lifts omega to a root of unity Omega mod p^k               */
+/*------------------------------------------------------------*/
+void lift_root_of_unity(ZZ& Omega, long omega, long s, long p, long k);
 
 #endif

@@ -1,3 +1,4 @@
+#include <NTL/lzz_pX.h>
 #include <NTL/ZZ_pX.h>
 #include <NTL/vector.h>
 
@@ -7,26 +8,52 @@ NTL_CLIENT
 
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
-/* multipoint evaluation over zz_p                            */
+/* multipoint evaluation over ZZ_p                            */
 /* FFT points                                                 */
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
 
+/*------------------------------------------------------------*/
+/* bit-reversal, taken from NTL's FFT.c                       */
+/*------------------------------------------------------------*/
+static
+long RevInc(long a, long k) {
+   long j, m;
 
+   j = k; 
+   m = 1L << (k-1);
+
+   while (j && (m & a)) {
+      a ^= m;
+      m >>= 1;
+      j--;
+   }
+   if (j) a ^= m;
+   return a;
+}
+
+/*------------------------------------------------------------*/
+/* inits the array of roots of unity and the bit-rev indices  */
+/*------------------------------------------------------------*/
 ZZ_pX_Multipoint_FFT::ZZ_pX_Multipoint_FFT(const ZZ_p & w, long n){
     this->k = NextPowerOfTwo(n);
-    this->s = 1L << k;
+    this->max_n = 1L << k;
     this->n = n;
 
-    powersW.SetLength(k+1);
+    powersW.SetLength(k);
     for (long kk = 0; kk < k; kk++){
-      long nn = 1L << k;
-      powersW[k].SetLength(nn);
-      ZZ_p ww = power(w, 1L << (k-kk));
+      long nn = 1L << kk;
+      powersW[kk].SetLength(nn);
+      ZZ_p ww = power(w, 1L << (k-1-kk));
       powersW[kk][0] = to_ZZ_p(1);
       for (long i = 1; i < nn; i++)
-	powersW[k][i] = powersW[k][i-1] * ww;
+	powersW[kk][i] = powersW[kk][i-1] * ww;
     }
+
+    rev.SetLength(n);
+    long i, j;
+    for (i = 0, j = 0; i < n; i++, j = RevInc(j, k))
+      rev[i] = j;
 }
 
 /*------------------------------------------------------------*/
@@ -36,11 +63,11 @@ void ZZ_pX_Multipoint_FFT::evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const {
 
   val.SetLength(n);
   Vec<ZZ_p> a, dft_a;
-  a.SetLength(s);
-  dft_a.SetLength(s);
+  a.SetLength(max_n);
+  dft_a.SetLength(max_n);
   for (long i = 0; i < n; i++)
     a[i] = coeff(f, i);
-  for (long i = n; i < s; i++)
+  for (long i = n; i < max_n; i++)
     a[i] = to_ZZ_p(0);
 
   if (k == 0) {
@@ -61,8 +88,9 @@ void ZZ_pX_Multipoint_FFT::evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const {
     ZZ_p as = a[s];
     ZZ_p at = a[t];
     dft_a[s] = as + at;
-    dft_a[t] = (as - at) * powersW[k][s];
+    dft_a[t] = (as - at) * powersW[k-1][s];
   }
+
   // 1 <= i < k-1
   for (long i = 1; i < k-1; i++){
 
@@ -90,6 +118,63 @@ void ZZ_pX_Multipoint_FFT::evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const {
   }
 
   for (long i = 0; i < n; i++)
-    val[i] = dft_a[i];
+    if (rev[i] < n) // duh
+      val[rev[i]] = dft_a[i];
+}
 
+/*------------------------------------------------------------*/
+/* finds a root of unity of order s mod p                     */
+/* assumes s is a power of 2                                  */
+/*------------------------------------------------------------*/
+long find_root_of_unity(long p, long s){
+  long ss = s;
+  long log = 0;
+  while ((ss & 1) == 0){
+    log++;
+    ss = ss >> 1;
+  }
+  if (ss != 1)
+    LogicError("FFT init with non power of 2");
+
+  zz_pPush push;
+  zz_p::UserFFTInit(p);
+  long w;
+  IsFFTPrime(p, w);
+  zz_p zww = to_zz_p(w);
+
+  long order = 0;
+  while (zww != to_zz_p(1)){
+    zww *= zww;
+    order++;
+  }
+
+  zww = power(to_zz_p(w), 1L << (order-log));
+  return rep(zww);
+}
+
+/*------------------------------------------------------------*/
+/* suppose that omega is a root of unity of order s mod p     */  
+/* lifts omega to a root of unity Omega mod p^k               */
+/*------------------------------------------------------------*/
+void lift_root_of_unity(ZZ& Omega, long omega, long s, long p, long k){
+  ZZ_pPush push;
+  Omega = to_ZZ(omega);
+
+  if (k == 1)
+    return;
+
+  ZZ pk = to_ZZ(p);
+
+  long prec = 1;
+  do{
+    pk = pk*pk;
+    ZZ_p::init(pk);
+    ZZ_p s_mod = to_ZZ_p(s);
+    ZZ_p Omega_mod = to_ZZ_p(Omega);
+    ZZ_p lift = Omega_mod*(to_ZZ_p(1) - (power(Omega_mod, s)-1)/s_mod);
+    Omega = rep(lift);
+    prec = 2*prec;
+  } while (prec < k);
+
+  Omega = Omega % power(to_ZZ(p), k);
 }
