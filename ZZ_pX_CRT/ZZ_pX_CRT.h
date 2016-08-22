@@ -52,13 +52,9 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
 
   ZZ_pX_Multipoint_FFT(){}
 
-  ZZ_pX_Multipoint_FFT(long n){
-    k = NextPowerOfTwo(n);
-    if (n != (1L << k)){
-      cerr << "Wrong length for ZZ_pX_Multipoint_FFT\n";
-      exit(-1);
-    }
-
+  ZZ_pX_Multipoint_FFT(const ZZ_p & w, long n){
+    this->k = NextPowerOfTwo(n);
+    this->s = 1L << k;
     this->n = n;
     if (ZZ_pInfo->p_info == NULL){
       cerr << "Attempt to init a ZZ_pX_Multipoint_FFT without ZZ_p::FFTInit\n";
@@ -70,26 +66,16 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
   /* basic operations                                           */
   /*------------------------------------------------------------*/
   void evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const;
-  void evaluate(Vec<Vec<ZZ_p>>& val, const Vec<ZZ_pX>& f) const;
-  void interpolate(ZZ_pX& f, const Vec<ZZ_p>& val) const;
+
+  void interpolate(ZZ_pX& f, const Vec<ZZ_p>& val) const{
+    LogicError("inverse TFT not implemented");
+  }
   
   ~ZZ_pX_Multipoint_FFT(){};
 
  private:
-  long k;
+  long k, s;
 };
-
-/*------------------------------------------------------------*/
-/* multiplicative order of a                                  */
-/* -1 if a = 0                                                */
-/*------------------------------------------------------------*/
-long order(const ZZ_p& a);
-
-/*------------------------------------------------------------*/
-/* finds an element of order at least ord                     */
-/* assumes it exists, does not verify                         */
-/*------------------------------------------------------------*/
-void element_of_order(ZZ_p& a, long ord);
 
 
 
