@@ -50,9 +50,9 @@ ZZ_pX_Multipoint_FFT::ZZ_pX_Multipoint_FFT(const ZZ_p & w, long n){
 	powersW[kk][i] = powersW[kk][i-1] * ww;
     }
 
-    rev.SetLength(n);
+    rev.SetLength(max_n);
     long i, j;
-    for (i = 0, j = 0; i < n; i++, j = RevInc(j, k))
+    for (i = 0, j = 0; i < max_n; i++, j = RevInc(j, k))
       rev[i] = j;
 }
 
@@ -93,17 +93,16 @@ void ZZ_pX_Multipoint_FFT::evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const {
 
   // 1 <= i < k-1
   for (long i = 1; i < k-1; i++){
+    maxell = (1L << (k-i-1));
 
     for (long j = 0; j < (1L << i); j++){
-      maxell = (1L << (k-i-1));
       s = j << (k-i);
       t = s + maxell;
-
       for (long ell = 0; ell < maxell; ell++){
         ZZ_p as = dft_a[ell + s];
         ZZ_p at = dft_a[ell + t];
         dft_a[ell + s] = as + at;
-        dft_a[ell + t] = (as - at) * powersW[k-i][ell];
+        dft_a[ell + t] = (as - at) * powersW[k-1-i][ell];
       }
     }
   }
@@ -117,7 +116,7 @@ void ZZ_pX_Multipoint_FFT::evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const {
     dft_a[s+1] = as - at;
   }
 
-  for (long i = 0; i < n; i++)
+  for (long i = 0; i < max_n; i++)
     if (rev[i] < n) // duh
       val[rev[i]] = dft_a[i];
 }

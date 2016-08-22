@@ -15,19 +15,18 @@ void check(int opt){
 
   zz_p::FFTInit(1);
   long p = zz_p::modulus();
-  long k = 1;
+  long k = 11;
   ZZ pZZ = to_ZZ(p);
   ZZ pk = power(pZZ, k);
   ZZ_p::init(pk);
-  
 
-  for (long i = 8; i < 10; i = 2*i){
-    long w = find_root_of_unity(p, i);
+  for (long i = 1; i < 10000; i = 2*i+3){
+    long order = 1L << NextPowerOfTwo(i);
+    long w = find_root_of_unity(p, order);
     ZZ W;
-    lift_root_of_unity(W, w, i, p, k);
+    lift_root_of_unity(W, w, order, p, k);
     ZZ_p omega = to_ZZ_p(W);
    
-
     ZZ_pX_Multipoint_FFT fft(omega, i);
     ZZ_pX f = random_ZZ_pX(i);
     Vec<ZZ_p> val;
@@ -38,9 +37,6 @@ void check(int opt){
       val2.SetLength(i);
       for (long j = 0; j < i; j++)
 	val2[j] = eval(f, power(omega, j));
-      cout << val << endl;
-      cout << val2 << endl;
-      cout << endl;
       assert (val == val2);
     }
     else{
