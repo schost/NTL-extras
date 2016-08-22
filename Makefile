@@ -11,6 +11,7 @@ all:	clean
 	cd bivariate/src ; make
 	cd cauchy_like_geometric_special/src ; make
 	cd mosaic_hankel/src ; make
+	cd ZZ_pX_CRT/src ; make
 
 clean:
 	rm -f lib/*
@@ -21,6 +22,7 @@ clean:
 	cd lzz_pX_middle_product/src ; make clean
 	cd lzz_pX_CRT/src ; make clean
 	cd ZZ_CRT/src ; make clean
+	cd ZZ_pX_CRT/src ; make clean
 	cd mat_lzz_pX_extra/src ; make clean
 	cd bivariate/src ; make clean
 	cd cauchy_like_geometric_special/src ; make clean
@@ -35,3 +37,4 @@ clean:
 	cd bivariate/test ; make clean
 	cd cauchy_like_geometric_special/test ; make clean
 	cd mosaic_hankel/test ; make clean
+	cd ZZ_pX_CRT/test ; make clean
