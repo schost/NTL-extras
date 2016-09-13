@@ -48,7 +48,7 @@ class zz_pX_Multipoint{
   /*------------------------------------------------------------*/
   /* points                                                     */
   /*------------------------------------------------------------*/
-  void points(zz_p& pt, long i) const{
+  void point(zz_p& pt, long i) const{
     pt = pts[i];
   }
 
@@ -188,6 +188,11 @@ class zz_pX_Multipoint_FFT : public zz_pX_Multipoint{
       cerr << "Attempt to init a zz_pX_Multipoint_FFT without zz_p::FFTInit\n";
       exit(-1);
     }
+
+    pts.SetLength(n);
+    zz_pX X;
+    SetCoeff(X, 1, to_zz_p(1));
+    evaluate(pts, X);
   }
 
   /*------------------------------------------------------------*/

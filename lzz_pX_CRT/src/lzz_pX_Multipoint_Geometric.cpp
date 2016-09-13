@@ -117,7 +117,7 @@ zz_pX_Multipoint_Geometric::zz_pX_Multipoint_Geometric(const zz_p& q, long eval_
   zz_p rho = q*q;
   this->q = rho;
   this->i0 = i0;
-  
+
   // ----------------------------------
   // precomputation for evaluation
   // ----------------------------------
@@ -227,6 +227,11 @@ zz_pX_Multipoint_Geometric::zz_pX_Multipoint_Geometric(const zz_p& q, long eval_
   }
 
   this->c = to_zz_p(1);
+  pts.SetLength(interp_n);
+  pts[0] = shift;
+  for (long i = 1; i < interp_n; i++)
+    pts[i] = rho*pts[i-1];
+
 }
 
 /*-----------------------------------------------------------*/
@@ -247,6 +252,9 @@ zz_pX_Multipoint_Geometric::zz_pX_Multipoint_Geometric(const zz_p& q, long n, co
     for (long i = 1; i < n; i++)
       powers_c[i] = c*powers_c[i-1];
     inv(inv_powers_c, powers_c);
+
+    for (long i = 0; i < n; i++)
+      pts[i] *= c;
   }
 }
 

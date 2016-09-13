@@ -317,7 +317,7 @@ void to_cauchy_grp(cauchy_like_geometric_special& CL,
     a = to_zz_p(w);
   }
   else
-    find_root(a, max(m, n));
+    element_of_order(a, max(m, n));
 
   b = a*a;
   find_c(c, b, n, m);
