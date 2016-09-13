@@ -57,6 +57,21 @@ ZZ_pX_Multipoint_FFT::ZZ_pX_Multipoint_FFT(const ZZ_p & w, long n){
 }
 
 /*------------------------------------------------------------*/
+/* inits the array of roots of unity and the bit-rev indices  */
+/*------------------------------------------------------------*/
+ZZ_pX_Multipoint_FFT::ZZ_pX_Multipoint_FFT(const ZZ_p & w, const ZZ_p & c, long n) : ZZ_pX_Multipoint_FFT(w, n){
+  powersC.SetLength(n);
+  inv_powersC.SetLength(n);
+  ZZ_p invC = 1/c;
+  powersC[0] = to_ZZ_p(1);
+  inv_powersC[0] = to_ZZ_p(1);
+  for (long i = 1; i < n; i++){
+    powersC[i] = c * powersC[i-1];
+    inv_powersC[i] = invC * inv_powersC[i-1];
+  }
+}
+
+/*------------------------------------------------------------*/
 /* does a forward FFT                                         */
 /*------------------------------------------------------------*/
 void ZZ_pX_Multipoint_FFT::evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const {
@@ -65,8 +80,14 @@ void ZZ_pX_Multipoint_FFT::evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const {
   Vec<ZZ_p> a, dft_a;
   a.SetLength(max_n);
   dft_a.SetLength(max_n);
-  for (long i = 0; i < n; i++)
-    a[i] = coeff(f, i);
+
+  if (powersC.length() == 0)
+    for (long i = 0; i < n; i++)
+      a[i] = coeff(f, i);
+  else
+    for (long i = 0; i < n; i++)
+      a[i] = coeff(f, i) * powersC[i];
+
   for (long i = n; i < max_n; i++)
     a[i] = to_ZZ_p(0);
 

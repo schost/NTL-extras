@@ -55,7 +55,11 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
 
   ZZ_pX_Multipoint_FFT(){}
 
+  // points are (w^j)_{0 <= j < n}
   ZZ_pX_Multipoint_FFT(const ZZ_p & w, long n);
+
+  // points are (c*w^j)_{0 <= j < n} 
+  ZZ_pX_Multipoint_FFT(const ZZ_p & w, const ZZ_p & c, long n);
 
   /*------------------------------------------------------------*/
   /* basic operations                                           */
@@ -71,6 +75,7 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
  private:
   long k, max_n;
   Vec<Vec<ZZ_p>> powersW;
+  Vec<ZZ_p> powersC, inv_powersC;
   Vec<long> rev;
 };
 
