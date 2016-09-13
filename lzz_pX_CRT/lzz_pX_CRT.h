@@ -45,6 +45,15 @@ class zz_pX_Multipoint{
     return n;
   }
 
+  /*------------------------------------------------------------*/
+  /* points                                                     */
+  /*------------------------------------------------------------*/
+  void points(zz_p& pt, long i) const{
+    pt = pts[i];
+  }
+
+  // TODO: why isn't this private?
+  Vec<zz_p> pts;
   long n;
 };
 
@@ -64,6 +73,7 @@ class zz_pX_Multipoint_General : public zz_pX_Multipoint{
   /* constructor from points                                    */
   /*------------------------------------------------------------*/
   zz_pX_Multipoint_General(const Vec<zz_p>& q){
+    pts = q;
     n = q.length();
     Vec<zz_pX> qpol;
     qpol.SetLength(n);
@@ -193,17 +203,6 @@ class zz_pX_Multipoint_FFT : public zz_pX_Multipoint{
   long k;
 };
 
-/*------------------------------------------------------------*/
-/* multiplicative order of a                                  */
-/* -1 if a = 0                                                */
-/*------------------------------------------------------------*/
-long order(const zz_p& a);
-
-/*------------------------------------------------------------*/
-/* finds an element of order at least ord                     */
-/* assumes it exists, does not verify                         */
-/*------------------------------------------------------------*/
-void element_of_order(zz_p& a, long ord);
 
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
