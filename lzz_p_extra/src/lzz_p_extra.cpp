@@ -4,39 +4,43 @@
 
 NTL_CLIENT
 
-/*-----------------------------------------------------------*/
-/* finds q that has order > n                                */
-/* q > q0                                                    */
-/*-----------------------------------------------------------*/
-void find_root(zz_p& q, long n, const zz_p& q0){
+
+/*------------------------------------------------------------*/
+/* multiplicative order of a                                  */
+/* -1 if a = 0                                                */
+/*------------------------------------------------------------*/
+long order(const zz_p& a){
+  if (a == 0)
+    return -1;
+  long o = 1;
+  zz_p ap = a;
+  while (ap != 1){
+    ap *= a;
+    o++;
+  }
+  return o;
+}
+
+/*------------------------------------------------------------*/
+/* finds an element of order at least ord                     */
+/* assumes it exists, does not verify                         */
+/*------------------------------------------------------------*/
+void element_of_order(zz_p& a, long ord){
 
   long p = zz_p::modulus();
-  if ((p-1) < n)
-    Error("order too large with respect to p\n");
+  if ((p-1) < ord)
+    LogicError("order too large with respect to p\n");
 
-  q = q0;
-  while(1){
-    q += 1;
-    zz_p tmp = q*q;
-    zz_p a = to_zz_p(1);
-    long too_small = 0;
-
-    for (long i = 0; i < n; i++){
-      a *= tmp;
-      if (a == to_zz_p(1)){
-	too_small = 1;
-	break;
-      }
+  while (1){
+    a = random_zz_p();
+    long ok = 1;
+    zz_p ap = a;
+    for (long i = 1; i < ord; i++){
+      if (ap == 1)
+	ok = 0;
+      ap *= a;
     }
-    if (too_small == 0)
+    if (ok == 1)
       return;
   }
-} 
-
-
-/*-----------------------------------------------------------*/
-/* finds q that has order > n                                */
-/*-----------------------------------------------------------*/
-void find_root(zz_p& q, long n){
-  find_root(q, n, to_zz_p(1));
 }
