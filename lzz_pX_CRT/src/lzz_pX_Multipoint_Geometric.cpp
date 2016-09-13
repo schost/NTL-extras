@@ -225,12 +225,29 @@ zz_pX_Multipoint_Geometric::zz_pX_Multipoint_Geometric(const zz_p& q, long eval_
     inv(mat1, mat1);
     mul(shift_matrix, mat2, mat1);
   }
+
+  this->c = to_zz_p(1);
 }
 
 /*-----------------------------------------------------------*/
 /* initializes all quantities                                */
 /*-----------------------------------------------------------*/
 zz_pX_Multipoint_Geometric::zz_pX_Multipoint_Geometric(const zz_p& q, long n, long i0) : zz_pX_Multipoint_Geometric(q, n, n, i0) { 
+}
+
+/*-----------------------------------------------------------*/
+/* initializes all quantities                                */
+/*-----------------------------------------------------------*/
+zz_pX_Multipoint_Geometric::zz_pX_Multipoint_Geometric(const zz_p& q, long n, const zz_p& c) : zz_pX_Multipoint_Geometric(q, n, n, 0) { 
+  if (c != to_zz_p(1)){
+    this->c = c;
+    powers_c.SetLength(n);
+    inv_powers_c.SetLength(n);
+    powers_c[0] = to_zz_p(1);
+    for (long i = 1; i < n; i++)
+      powers_c[i] = c*powers_c[i-1];
+    inv(inv_powers_c, powers_c);
+  }
 }
 
 /*-----------------------------------------------------------*/
@@ -241,9 +258,10 @@ void zz_pX_Multipoint_Geometric::evaluate_one(Vec<zz_p>& val, const zz_pX& f) co
   
   zz_pX T;
   T.rep.SetLength(eval_n);
-  
+
   for (long i = 0; i < eval_n; i++)
     T.rep[i] = coeff(f, eval_n-1-i) * eval_inverse_powers_square_q_shifted[eval_n-1-i];
+
   T.normalize();
   
   if (eval_n > NTL_zz_pX_MUL_CROSSOVER){
@@ -266,6 +284,10 @@ void zz_pX_Multipoint_Geometric::evaluate_one(Vec<zz_p>& val, const zz_pX& f) co
 /*-----------------------------------------------------------*/
 void zz_pX_Multipoint_Geometric::evaluate(Vec<zz_p>& val, const zz_pX& f_init) const {
   zz_pX f = f_init;
+
+  if (c != to_zz_p(1))
+    for (long i = 0; i <= deg(f); i++)
+      f.rep[i] *= powers_c[i];
 
   if (n == 1){
     val.SetLength(1);
@@ -384,6 +406,10 @@ void zz_pX_Multipoint_Geometric::interpolate(zz_pX& f, const vec_zz_p& val) cons
   f.rep.SetLength(n);
   for (long i = 0; i < n; i++)
     f.rep[i] = coeff(R, i) * inverse_derivative[i];
+  if (c != to_zz_p(1))
+    for (long i = 0; i < n; i++)
+      f.rep[i] *= inv_powers_c[i];
+
   f.normalize();
 }
 

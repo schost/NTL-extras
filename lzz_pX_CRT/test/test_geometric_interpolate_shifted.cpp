@@ -39,7 +39,7 @@ void check(int opt){
       ev->evaluate(valQ, f);
     cout << GetTime()-t << " ";
 
-    zz_pX_Multipoint_Geometric evG(a, j, cx);
+    zz_pX_Multipoint_Geometric evG(a, j, c);
     ev = &evG;
     t = GetTime();
     for (long i = 0; i < 1000; i++)

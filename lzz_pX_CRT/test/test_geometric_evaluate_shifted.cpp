@@ -19,10 +19,11 @@ void check(int opt){
   for (long j = 10; j < 1100; j++){
     Vec<zz_p> q;
     zz_p a = random_zz_p();
-    long i0 = 246;
+    zz_p c = random_zz_p();
+
     q.SetLength(j);
     for (long i = 0; i < j; i++){
-      q[i] = power(a,2*(i+i0));
+      q[i] = c*power(a,2*i);
     }
 
     zz_pX f = random_zz_pX(j);
@@ -41,7 +42,7 @@ void check(int opt){
       ev->evaluate(valQ, f);
     cout << GetTime()-t << " ";
 
-    zz_pX_Multipoint_Geometric evG(a, j, i0);
+    zz_pX_Multipoint_Geometric evG(a, j, c);
     ev = &evG;
     t = GetTime();
     for (long i = 0; i < 1000; i++)
@@ -49,11 +50,6 @@ void check(int opt){
     cout << GetTime()-t << endl;
     if (valG != valQ) 
       cout << j << endl;
-
-    
-
-
-
   }
 }  
 
