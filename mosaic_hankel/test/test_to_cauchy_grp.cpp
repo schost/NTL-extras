@@ -40,6 +40,8 @@ void random(Vec<zz_p>& v, long n, long m){
 /*------------------------------------------------------------*/
 void check(int opt){
   zz_p::FFTInit(0);
+  //zz_p::init(9007);
+
   for (long i = 2; i < 110; i += 1){
 
     Vec<zz_p> dat00, dat01, dat02, dat10, dat11, dat12;
@@ -76,7 +78,7 @@ void check(int opt){
       Mat<zz_p> X, Y;
       Vec<zz_p> e, f;
       zz_pX_Multipoint_Geometric X_int, Y_int;
-      
+
       to_cauchy_grp(CL, X_int, Y_int, e, f, MH);
 
       Mat<zz_p> MM, MC, MX_i, MY_i, Me, Mf;

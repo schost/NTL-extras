@@ -1,7 +1,9 @@
 #include <NTL/lzz_pX.h>
 #include <NTL/mat_lzz_p.h>
 
+#include "lzz_p_extra.h"
 #include "lzz_pX_CRT.h"
+#include "ZZ_pX_CRT.h"
 #include "cauchy_geometric_special.h"
 #include "mosaic_hankel.h"
 
@@ -244,12 +246,51 @@ void generators(Mat<zz_p>& G, Mat<zz_p>& H, const mosaic_hankel& M){
 }
 
 /*------------------------------------------------------------------*/
+/* finds c such that                                                */
+/* - c != 0                                                         */
+/* - a^i - c a^j != 0 for 0 <= i < n and 0 <= j < m                 */
+/*------------------------------------------------------------------*/
+static 
+void find_c(zz_p& c, const zz_p& a, long n, long m){
+  Vec<zz_p> pow_a, pow_inva;
+  pow_a.SetLength(n);
+  pow_inva.SetLength(m);
+
+  pow_a[0] = to_zz_p(1);
+  pow_inva[0] = to_zz_p(1);
+
+  zz_p inva = 1/a;
+  for (long i = 1; i < n; i++)
+    pow_a[i] = a*pow_a[i-1];
+  for (long i = 1; i < m; i++)
+    pow_inva[i] = inva*pow_inva[i-1];
+
+  bool done;
+  do{
+    c = random_zz_p();
+    done = true;
+    if (c == 0)
+      done = false;
+    for (long i = 0; i < n; i++)
+      if (c == pow_a[i])
+	done = false;
+    for (long i = 0; i < m; i++)
+      if (c == pow_inva[i])
+	done = false;
+  } while (done != true);
+}
+
+/*------------------------------------------------------------------*/
 /* preconditions M                                                  */
 /* builds the matrix CL = (D_e X_int) M (D_f Y_int)^t, where:       */
 /* - X_int, Y_int are geometric interpolation                       */
 /* - D_e, D_f are diagonal matrix built on vectors e and f          */
 /* - CL is cauchy-like special                                      */
 /* - CL is expected to have generic rank profile                    */
+/*                                                                  */
+/* - X_int is built on (1,w,w^2,..)                                 */
+/* - Y_int is built on (c,cw,cw^2,..)                               */
+/* If we are over an FFT prime, w = root of unity                   */
 /*------------------------------------------------------------------*/
 void to_cauchy_grp(cauchy_like_geometric_special& CL, 
 		   zz_pX_Multipoint_Geometric& X_int, zz_pX_Multipoint_Geometric& Y_int,
@@ -260,13 +301,30 @@ void to_cauchy_grp(cauchy_like_geometric_special& CL,
   Mat<zz_p> X, Y;
   Mat<zz_p> G, H;
   generators(G, H, M);
-  zz_p a = random_zz_p();
-  zz_p b = a*a;
+  cauchy_geometric_special C;
+  zz_p a, b, c;
   long n = M.NumRows();
   long m = M.NumCols();
+
+  if (max(m, n) > zz_p::modulus())
+    LogicError("Field too small for preconditioning.");
+
+  zz_pInfoT *info = zz_pInfo;
+  if (info->p_info != NULL){  // FFT prime
+    long k = NextPowerOfTwo(max(m, n));
+    long order = 1L << k;
+    long w = find_root_of_unity(zz_p::modulus(), 2*order);
+    a = to_zz_p(w);
+  }
+  else
+    find_root(a, max(m, n));
+
+  b = a*a;
+  find_c(c, b, n, m);
   X_int = zz_pX_Multipoint_Geometric(a, n, 0);
-  Y_int = zz_pX_Multipoint_Geometric(a, m, n);
-  cauchy_geometric_special C(to_zz_p(1), power(b, n), b, n, m);
+  Y_int = zz_pX_Multipoint_Geometric(a, m, c);
+  C = cauchy_geometric_special(to_zz_p(1), c, b, n, m);
+
   long alpha = G.NumCols();
   X.SetDims(n, alpha+2);
   Y.SetDims(m, alpha+2);
@@ -291,7 +349,7 @@ void to_cauchy_grp(cauchy_like_geometric_special& CL,
     for (long i = 0; i < n; i++)
       X[i][j] = tmp_v[i] * e[i];
   }
-  
+
   zz_p tmp_z = to_zz_p(1);
   for (long i = 0; i < n; i++){
     X[i][alpha] = e[i]*(power(tmp_z, n)-1);
@@ -308,7 +366,6 @@ void to_cauchy_grp(cauchy_like_geometric_special& CL,
   X_int.evaluate(tmp_v, tmp_p);
   for (long i = 0; i < n; i++)
     X[i][alpha+1] = tmp_v[i] * e[i];
-
 
   vec_zz_p tmp_w;
   for (long j = 0; j < alpha; j++){
@@ -334,6 +391,7 @@ void to_cauchy_grp(cauchy_like_geometric_special& CL,
   for (long i = 0; i < m; i++)
     Y[i][alpha] = tmp_w[i] * f[i];
 
+  tmp_z = c;
   for (long i = 0; i < m; i++){
     Y[i][alpha+1] = -f[i]*power(tmp_z, m);
     tmp_z = tmp_z * b;
