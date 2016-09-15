@@ -4,6 +4,7 @@
 
 #include "magma_output.h"
 #include "lzz_pX_CRT.h"
+#include "lzz_p_extra.h"
 
 NTL_CLIENT
 

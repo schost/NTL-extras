@@ -45,6 +45,15 @@ class zz_pX_Multipoint{
     return n;
   }
 
+  /*------------------------------------------------------------*/
+  /* points                                                     */
+  /*------------------------------------------------------------*/
+  void point(zz_p& pt, long i) const{
+    pt = pts[i];
+  }
+
+  // TODO: why isn't this private?
+  Vec<zz_p> pts;
   long n;
 };
 
@@ -64,6 +73,7 @@ class zz_pX_Multipoint_General : public zz_pX_Multipoint{
   /* constructor from points                                    */
   /*------------------------------------------------------------*/
   zz_pX_Multipoint_General(const Vec<zz_p>& q){
+    pts = q;
     n = q.length();
     Vec<zz_pX> qpol;
     qpol.SetLength(n);
@@ -111,6 +121,12 @@ class zz_pX_Multipoint_Geometric : public zz_pX_Multipoint{
   zz_pX_Multipoint_Geometric(const zz_p& a, long N, long i0);
 
   /*------------------------------------------------------------*/
+  /* constructor for geometric progressions                     */
+  /* we interpolate at c.a^(2i), i=0..N-1                       */
+  /*------------------------------------------------------------*/
+  zz_pX_Multipoint_Geometric(const zz_p& a, long N, const zz_p& c);
+
+  /*------------------------------------------------------------*/
   /* constructor for geometric progressione                     */
   /* we interpolate at a^(2(i+i0)), i=0..N-1                    */
   /* assume all polynomials we evaluate have degree < eval_N    */
@@ -120,7 +136,6 @@ class zz_pX_Multipoint_Geometric : public zz_pX_Multipoint{
   /*------------------------------------------------------------*/
   /* basic operations                                           */
   /*------------------------------------------------------------*/
-  void evaluate_one(Vec<zz_p>& val, const zz_pX& f) const;
   void evaluate(Vec<zz_p>& val, const zz_pX& f) const;
   void evaluate(Vec<Vec<zz_p>>& val, const Vec<zz_pX>& f) const;
   void interpolate(zz_pX& f, const Vec<zz_p>& val) const;
@@ -128,14 +143,19 @@ class zz_pX_Multipoint_Geometric : public zz_pX_Multipoint{
   
   ~zz_pX_Multipoint_Geometric(){};
 
-  // private:
+  // TODO: any reason they are not private?
+  // private:  
+
   long eval_n;
   long i0;
-  Vec<zz_p> eval_inverse_powers_square_q, eval_inverse_powers_square_q_shifted, inverse_powers_square_q, inverse_powers_square_q_shifted, inverse_derivative;
+  Vec<zz_p> eval_inverse_powers_square_q, eval_inverse_powers_square_q_shifted, inverse_powers_square_q, inverse_powers_square_q_shifted, inverse_derivative, powers_c, inv_powers_c;
   zz_pX M, revM, eval_S, S;
-  zz_p q;
+  zz_p q, c;
   fftRep eval_S_FFT, S_FFT, revM_FFT;
   Mat<zz_p> shift_matrix;
+
+ private:
+  void evaluate_one(Vec<zz_p>& val, const zz_pX& f) const;
 };
 
 
@@ -168,6 +188,11 @@ class zz_pX_Multipoint_FFT : public zz_pX_Multipoint{
       cerr << "Attempt to init a zz_pX_Multipoint_FFT without zz_p::FFTInit\n";
       exit(-1);
     }
+
+    pts.SetLength(n);
+    zz_pX X;
+    SetCoeff(X, 1, to_zz_p(1));
+    evaluate(pts, X);
   }
 
   /*------------------------------------------------------------*/
@@ -183,17 +208,6 @@ class zz_pX_Multipoint_FFT : public zz_pX_Multipoint{
   long k;
 };
 
-/*------------------------------------------------------------*/
-/* multiplicative order of a                                  */
-/* -1 if a = 0                                                */
-/*------------------------------------------------------------*/
-long order(const zz_p& a);
-
-/*------------------------------------------------------------*/
-/* finds an element of order at least ord                     */
-/* assumes it exists, does not verify                         */
-/*------------------------------------------------------------*/
-void element_of_order(zz_p& a, long ord);
 
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
