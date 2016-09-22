@@ -7,39 +7,26 @@
 using namespace std;
 using namespace NTL;
 
-ZZ_pX pow (const ZZ_pX& f, unsigned long p){
-  if (p == 0)
-    return ZZ_pX(1);
-  ZZ_pX result{f};
-  for (unsigned long i = 1; i < p; i++){
-    result *= f;
-  }
-  return result;
-}
-
-void BivariateModularComp::init (const ZZX &f_new, const Vec<long> &type_new, unsigned long prec_new){
-	f = f_new;
-	type = type_new;
-	prec = prec_new;
-	sqrtP = ceil(sqrt(type.length()));
-  ZZX running = ZZX{1};
-  for (unsigned long i = 0; i < sqrtP; i++){
+void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long prec_new){
+  type = type_new;
+  f_field = f;
+  prec = prec_new;
+  sqrtP = ceil(sqrt(type.length()));
+  ZZ_pX running = ZZ_pX{1};
+  Vec<ZZ_pX> fs;
+  for (long i = 0; i < sqrtP; i++){
     fs.append(running);
     running *= f;
     trunc(running,prec);
   }
-  F = running;
-  conv(f_field, f);
-  conv(F_field, F);
-  conv(fs_field, fs);
-  for (long i = 0; i < type.length(); i++) totalVars += type[i] + 1;
-  create_rhs_matrix(B,fs_field);
+  F_field = running;
+  create_rhs_matrix(B,fs);
   initialized = true;
 }
 
 BivariateModularComp::BivariateModularComp(){}
 
-BivariateModularComp::BivariateModularComp(const ZZX& f, const Vec<long> &type, unsigned long prec) {
+BivariateModularComp::BivariateModularComp(const ZZ_pX& f, const Vec<long> &type, long prec) {
   init(f,type,prec);
 }
 
@@ -108,7 +95,7 @@ Vec<ZZ_p> BivariateModularComp::mult_Horners(const Vec<ZZ_p> &rhs){
   for (long i = lhs.length()-2; i >= 0; i--){
     result = trunc((result * f_field),prec) + lhs[i];
   }
-  for (unsigned long i = 0; i < prec; i++)
+  for (long i = 0; i < prec; i++)
     v.append(coeff(result,i));
   return v;
 }
@@ -126,7 +113,7 @@ Vec<ZZ_p> BivariateModularComp::mult(const Vec<ZZ_p> &rhs){
     p = trunc(p*F_field,prec) + B[i][0];
   }
   Vec<ZZ_p> v;
-  for (unsigned long i = 0; i < prec; i++)
+  for (long i = 0; i < prec; i++)
     v.append(coeff(p,i));
   return v;
 }

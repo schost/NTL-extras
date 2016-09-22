@@ -9,7 +9,7 @@ TESTS = $(patsubst %.cpp, u%, $(SRC))
 EXEC = $(patsubst %.cpp, %, $(SRC))
 
 CXX = g++
-CXXFLAGS = -Wall -std=c++11 -O3 -march=native -I$(INC_DIR)
+CXXFLAGS = -g -Wall -std=c++11 -O3 -march=native -I$(INC_DIR)
 LIBS = -lntl -lpthread -lgmp -lm
 .PHONY: clean
 

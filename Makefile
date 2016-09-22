@@ -13,6 +13,7 @@ all:	clean
 	cd bivariate/src ; make
 	cd cauchy_like_geometric_special/src ; make
 	cd mosaic_hankel/src ; make
+	cd bivariatemodularcomp/src ; make
 
 clean:
 	rm -f lib/*
