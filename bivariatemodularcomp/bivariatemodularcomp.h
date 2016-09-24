@@ -34,11 +34,18 @@ public:
   // the constructor takes in the polynomial (full precision), type and precision the answer should be
   BivariateModularComp(const NTL::ZZ_pX& f, const NTL::Vec<long> &type, long prec);
 
+  // construct given sufficient powers of f, see init
+  BivariateModularComp(const NTL::Vec<NTL::ZZ_pX> &fs, const NTL::Vec<long> &type, long prec);
+
   // default ctor; does nothing
   BivariateModularComp();
 
   // initializes the function with type
   void init(const NTL::ZZ_pX& f, const NTL::Vec<long> &type, long prec);
+
+  // initialize without calculating the powers, assumes fs = {f^0, f^1, f^2 ...}
+  // throws an exception if not enough powers of f are given
+  void init (const NTL::Vec<NTL::ZZ_pX>& fs, const NTL::Vec<long> &type, long prec);
    
   // multiplies rhs with the matrix created by the powers of f in
   // the given type by using Horner's rule

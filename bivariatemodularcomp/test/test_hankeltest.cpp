@@ -1,5 +1,7 @@
 #include "mosaic_hankel.h"
 #include <sstream>
+#include "hermite_pade.h"
+#include <NTL/ZZX.h>
 using namespace NTL;
 using namespace std;
 
@@ -46,4 +48,8 @@ int main(){
   mosaic_hankel mh (init);
   to_dense(M,mh);
   cout << M << endl;
+  ZZX fp;
+  conv(fp, f_original);
+  cout << "From Hermite-Pade" << endl;
+  hermite_pade(fp,type);
 }

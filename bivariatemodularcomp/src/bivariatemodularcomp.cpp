@@ -24,10 +24,29 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
   initialized = true;
 }
 
+void BivariateModularComp::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
+  sqrtP = ceil(sqrt(type.length()));
+  if (fs.length() <= sqrtP) throw "not enough powers of f";
+  this->type = type;
+  this->prec = prec;
+  f_field = fs[1];
+  Vec<ZZ_pX> sub_fs;
+  sub_fs.SetLength(sqrtP);
+  for (long i = 0; i < sqrtP; i++)
+    sub_fs[i] = fs[i];
+  F_field = fs[sqrtP];
+  create_rhs_matrix(B,fs);
+  initialized = true;
+}
+
 BivariateModularComp::BivariateModularComp(){}
 
 BivariateModularComp::BivariateModularComp(const ZZ_pX& f, const Vec<long> &type, long prec) {
   init(f,type,prec);
+}
+
+BivariateModularComp::BivariateModularComp(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
+  init(fs,type,prec);
 }
 
 Vec<ZZ_pX> BivariateModularComp::create_lhs_list (const Vec<ZZ_p> &v){

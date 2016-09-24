@@ -1,0 +1,429 @@
+hermite_pade.cpp: In constructor ‘hermite_pade::hermite_pade(const NTL::ZZX&, const NTL::Vec<long int>&)’:
+hermite_pade.cpp:47:15: error: no matching function for call to ‘conv(const NTL::ZZX&, NTL::Vec<NTL::ZZ>&)’
+   conv(f, f_ZZ);
+               ^
+In file included from /usr/local/include/NTL/ZZ.h:19:0,
+                 from /usr/local/include/NTL/vec_ZZ.h:5,
+                 from /usr/local/include/NTL/ZZX.h:5,
+                 from ../../include/bivariatemodularcomp.h:3,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/tools.h:240:13: note: candidate: void NTL::conv(int&, int)
+ inline void conv(int& x, int a) { x = a; }
+             ^
+/usr/local/include/NTL/tools.h:240:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/tools.h:241:13: note: candidate: void NTL::conv(int&, long int)
+ inline void conv(int& x, long a) 
+             ^
+/usr/local/include/NTL/tools.h:241:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/tools.h:243:13: note: candidate: void NTL::conv(int&, float)
+ inline void conv(int& x, float a) { x = int(NTL_SNS floor(double(a))); }
+             ^
+/usr/local/include/NTL/tools.h:243:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/tools.h:244:13: note: candidate: void NTL::conv(int&, double)
+ inline void conv(int& x, double a) { x = int(NTL_SNS floor(a)); }
+             ^
+/usr/local/include/NTL/tools.h:244:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/tools.h:246:13: note: candidate: void NTL::conv(int&, unsigned int)
+ inline void conv(int& x, unsigned a) 
+             ^
+/usr/local/include/NTL/tools.h:246:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/tools.h:249:13: note: candidate: void NTL::conv(int&, long unsigned int)
+ inline void conv(int& x, unsigned long a)
+             ^
+/usr/local/include/NTL/tools.h:249:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/tools.h:265:13: note: candidate: void NTL::conv(long int&, int)
+ inline void conv(long& x, int a) { x = a; }
+             ^
+/usr/local/include/NTL/tools.h:265:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/tools.h:266:13: note: candidate: void NTL::conv(long int&, long int)
+ inline void conv(long& x, long a) { x = a; }
+             ^
+/usr/local/include/NTL/tools.h:266:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/tools.h:267:13: note: candidate: void NTL::conv(long int&, float)
+ inline void conv(long& x, float a) { x = long(NTL_SNS floor(double(a))); }
+             ^
+/usr/local/include/NTL/tools.h:267:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/tools.h:268:13: note: candidate: void NTL::conv(long int&, double)
+ inline void conv(long& x, double a) { x = long(NTL_SNS floor(a)); }
+             ^
+/usr/local/include/NTL/tools.h:268:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/tools.h:270:13: note: candidate: void NTL::conv(long int&, unsigned int)
+ inline void conv(long& x, unsigned a)
+             ^
+/usr/local/include/NTL/tools.h:270:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/tools.h:273:13: note: candidate: void NTL::conv(long int&, long unsigned int)
+ inline void conv(long& x, unsigned long a)
+             ^
+/usr/local/include/NTL/tools.h:273:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/tools.h:287:13: note: candidate: void NTL::conv(float&, int)
+ inline void conv(float& x, int a) { x = float(a); }
+             ^
+/usr/local/include/NTL/tools.h:287:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘float&’
+/usr/local/include/NTL/tools.h:288:13: note: candidate: void NTL::conv(float&, long int)
+ inline void conv(float& x, long a) { x = float(a); }
+             ^
+/usr/local/include/NTL/tools.h:288:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘float&’
+/usr/local/include/NTL/tools.h:289:13: note: candidate: void NTL::conv(float&, unsigned int)
+ inline void conv(float& x, unsigned a) { x = float(a); }
+             ^
+/usr/local/include/NTL/tools.h:289:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘float&’
+/usr/local/include/NTL/tools.h:290:13: note: candidate: void NTL::conv(float&, long unsigned int)
+ inline void conv(float& x, unsigned long a) { x = float(a); }
+             ^
+/usr/local/include/NTL/tools.h:290:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘float&’
+/usr/local/include/NTL/tools.h:291:13: note: candidate: void NTL::conv(float&, float)
+ inline void conv(float& x, float a) { x = a; }
+             ^
+/usr/local/include/NTL/tools.h:291:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘float&’
+/usr/local/include/NTL/tools.h:292:13: note: candidate: void NTL::conv(float&, double)
+ inline void conv(float& x, double a) { x = float(a); }
+             ^
+/usr/local/include/NTL/tools.h:292:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘float&’
+/usr/local/include/NTL/tools.h:301:13: note: candidate: void NTL::conv(double&, int)
+ inline void conv(double& x, int a) { x = double(a); }
+             ^
+/usr/local/include/NTL/tools.h:301:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘double&’
+/usr/local/include/NTL/tools.h:302:13: note: candidate: void NTL::conv(double&, long int)
+ inline void conv(double& x, long a) { x = double(a); }
+             ^
+/usr/local/include/NTL/tools.h:302:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘double&’
+/usr/local/include/NTL/tools.h:303:13: note: candidate: void NTL::conv(double&, unsigned int)
+ inline void conv(double& x, unsigned a) { x = double(a); }
+             ^
+/usr/local/include/NTL/tools.h:303:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘double&’
+/usr/local/include/NTL/tools.h:304:13: note: candidate: void NTL::conv(double&, long unsigned int)
+ inline void conv(double& x, unsigned long a) { x = double(a); }
+             ^
+/usr/local/include/NTL/tools.h:304:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘double&’
+/usr/local/include/NTL/tools.h:305:13: note: candidate: void NTL::conv(double&, float)
+ inline void conv(double& x, float a) { x = double(a); }
+             ^
+/usr/local/include/NTL/tools.h:305:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘double&’
+/usr/local/include/NTL/tools.h:306:13: note: candidate: void NTL::conv(double&, double)
+ inline void conv(double& x, double a) { x = a; }
+             ^
+/usr/local/include/NTL/tools.h:306:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘double&’
+/usr/local/include/NTL/tools.h:320:13: note: candidate: void NTL::conv(unsigned int&, int)
+ inline void conv(unsigned int& x, int a) { x = ((unsigned int)(a)); }
+             ^
+/usr/local/include/NTL/tools.h:320:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/tools.h:321:13: note: candidate: void NTL::conv(unsigned int&, long int)
+ inline void conv(unsigned int& x, long a) { x = ((unsigned int)(a)); }
+             ^
+/usr/local/include/NTL/tools.h:321:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/tools.h:322:13: note: candidate: void NTL::conv(unsigned int&, unsigned int)
+ inline void conv(unsigned int& x, unsigned a) { x = a; }
+             ^
+/usr/local/include/NTL/tools.h:322:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/tools.h:323:13: note: candidate: void NTL::conv(unsigned int&, long unsigned int)
+ inline void conv(unsigned int& x, unsigned long a) { x = ((unsigned int)(a)); }
+             ^
+/usr/local/include/NTL/tools.h:323:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/tools.h:324:13: note: candidate: void NTL::conv(unsigned int&, float)
+ inline void conv(unsigned int& x, float a) { x = ((unsigned int) to_long(a)); }
+             ^
+/usr/local/include/NTL/tools.h:324:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/tools.h:325:13: note: candidate: void NTL::conv(unsigned int&, double)
+ inline void conv(unsigned int& x, double a) { x = ((unsigned int) to_long(a)); }
+             ^
+/usr/local/include/NTL/tools.h:325:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/tools.h:327:13: note: candidate: void NTL::conv(long unsigned int&, int)
+ inline void conv(unsigned long& x, int a) { x = ((unsigned long)(a)); }
+             ^
+/usr/local/include/NTL/tools.h:327:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/tools.h:328:13: note: candidate: void NTL::conv(long unsigned int&, long int)
+ inline void conv(unsigned long& x, long a) { x = ((unsigned long)(a)); }
+             ^
+/usr/local/include/NTL/tools.h:328:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/tools.h:329:13: note: candidate: void NTL::conv(long unsigned int&, unsigned int)
+ inline void conv(unsigned long& x, unsigned a) { x = ((unsigned long)(a)); }
+             ^
+/usr/local/include/NTL/tools.h:329:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/tools.h:330:13: note: candidate: void NTL::conv(long unsigned int&, long unsigned int)
+ inline void conv(unsigned long& x, unsigned long a) { x = a; }
+             ^
+/usr/local/include/NTL/tools.h:330:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/tools.h:331:13: note: candidate: void NTL::conv(long unsigned int&, float)
+ inline void conv(unsigned long& x, float a) { x = ((unsigned int) to_long(a)); }
+             ^
+/usr/local/include/NTL/tools.h:331:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/tools.h:332:13: note: candidate: void NTL::conv(long unsigned int&, double)
+ inline void conv(unsigned long& x, double a) { x = ((unsigned int) to_long(a)); }
+             ^
+/usr/local/include/NTL/tools.h:332:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/tools.h:345:3: note: candidate: template<class T, class S> T NTL::conv(const S&)
+ T conv(const S& a)
+   ^
+/usr/local/include/NTL/tools.h:345:3: note:   template argument deduction/substitution failed:
+hermite_pade.cpp:47:15: note:   candidate expects 1 argument, 2 provided
+   conv(f, f_ZZ);
+               ^
+In file included from /usr/local/include/NTL/ZZ.h:20:0,
+                 from /usr/local/include/NTL/vec_ZZ.h:5,
+                 from /usr/local/include/NTL/ZZX.h:5,
+                 from ../../include/bivariatemodularcomp.h:3,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/vector.h:787:6: note: candidate: template<class T, class S> void NTL::conv(NTL::Vec<T>&, const NTL::Vec<S>&)
+ void conv(Vec<T>& x, const Vec<S>& a)
+      ^
+/usr/local/include/NTL/vector.h:787:6: note:   template argument deduction/substitution failed:
+hermite_pade.cpp:47:15: note:   types ‘NTL::Vec<T>’ and ‘const NTL::ZZX’ have incompatible cv-qualifiers
+   conv(f, f_ZZ);
+               ^
+In file included from /usr/local/include/NTL/vec_ZZ.h:5:0,
+                 from /usr/local/include/NTL/ZZX.h:5,
+                 from ../../include/bivariatemodularcomp.h:3,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/ZZ.h:195:13: note: candidate: void NTL::conv(NTL::ZZ&, const NTL::ZZ&)
+ inline void conv(ZZ& x, const ZZ& a) { x = a; }
+             ^
+/usr/local/include/NTL/ZZ.h:195:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:198:13: note: candidate: void NTL::conv(NTL::ZZ&, long int)
+ inline void conv(ZZ& x, long a) { NTL_zintoz(a, &x.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:198:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:201:13: note: candidate: void NTL::conv(NTL::ZZ&, int)
+ inline void conv(ZZ& x, int a) { NTL_zintoz(long(a), &x.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:201:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:204:13: note: candidate: void NTL::conv(NTL::ZZ&, long unsigned int)
+ inline void conv(ZZ& x, unsigned long a) { NTL_zuintoz(a, &x.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:204:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:207:13: note: candidate: void NTL::conv(NTL::ZZ&, unsigned int)
+ inline void conv(ZZ& x, unsigned int a) { NTL_zuintoz((unsigned long)(a), &x.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:207:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:210:6: note: candidate: void NTL::conv(NTL::ZZ&, const char*)
+ void conv(ZZ& x, const char *s);
+      ^
+/usr/local/include/NTL/ZZ.h:210:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:214:13: note: candidate: void NTL::conv(NTL::ZZ&, double)
+ inline void conv(ZZ& x, double a) { NTL_zdoubtoz(a, &x.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:214:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:218:13: note: candidate: void NTL::conv(NTL::ZZ&, float)
+ inline void conv(ZZ& x, float a) { NTL_zdoubtoz(double(a), &x.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:218:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ.h:222:13: note: candidate: void NTL::conv(long int&, const NTL::ZZ&)
+ inline void conv(long& x, const ZZ& a) { x = NTL_ztoint(a.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:222:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/ZZ.h:225:13: note: candidate: void NTL::conv(int&, const NTL::ZZ&)
+ inline void conv(int& x, const ZZ& a) 
+             ^
+/usr/local/include/NTL/ZZ.h:225:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/ZZ.h:233:13: note: candidate: void NTL::conv(long unsigned int&, const NTL::ZZ&)
+ inline void conv(unsigned long& x, const ZZ& a) { x = NTL_ztouint(a.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:233:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/ZZ.h:236:13: note: candidate: void NTL::conv(unsigned int&, const NTL::ZZ&)
+ inline void conv(unsigned int& x, const ZZ& a) 
+             ^
+/usr/local/include/NTL/ZZ.h:236:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/ZZ.h:241:13: note: candidate: void NTL::conv(double&, const NTL::ZZ&)
+ inline void conv(double& x, const ZZ& a) { x = NTL_zdoub(a.rep); }
+             ^
+/usr/local/include/NTL/ZZ.h:241:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘double&’
+/usr/local/include/NTL/ZZ.h:244:13: note: candidate: void NTL::conv(float&, const NTL::ZZ&)
+ inline void conv(float& x, const ZZ& a) { x = float(NTL_zdoub(a.rep)); }
+             ^
+/usr/local/include/NTL/ZZ.h:244:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘float&’
+In file included from /usr/local/include/NTL/lzz_pX.h:6:0,
+                 from /usr/local/include/NTL/ZZX.h:6,
+                 from ../../include/bivariatemodularcomp.h:3,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/lzz_p.h:213:6: note: candidate: void NTL::conv(NTL::zz_p&, long int)
+ void conv(zz_p& x, long a)
+      ^
+/usr/local/include/NTL/lzz_p.h:213:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_p&’
+/usr/local/include/NTL/lzz_p.h:221:6: note: candidate: void NTL::conv(NTL::zz_p&, const NTL::ZZ&)
+ void conv(zz_p& x, const ZZ& a);
+      ^
+/usr/local/include/NTL/lzz_p.h:221:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_p&’
+/usr/local/include/NTL/lzz_p.h:433:6: note: candidate: void NTL::conv(NTL::Vec<NTL::zz_p>&, const NTL::Vec<NTL::ZZ>&)
+ void conv(Vec<zz_p>& x, const Vec<ZZ>& a);
+      ^
+/usr/local/include/NTL/lzz_p.h:433:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::Vec<NTL::zz_p>&’
+/usr/local/include/NTL/lzz_p.h:434:6: note: candidate: void NTL::conv(NTL::Vec<NTL::zz_p>&, const NTL::Vec<long int>&)
+ void conv(Vec<zz_p>& x, const Vec<long>& a);
+      ^
+/usr/local/include/NTL/lzz_p.h:434:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::Vec<NTL::zz_p>&’
+/usr/local/include/NTL/lzz_p.h:442:13: note: candidate: void NTL::conv(int&, NTL::zz_p)
+ inline void conv(int& x, zz_p a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/lzz_p.h:442:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/lzz_p.h:443:13: note: candidate: void NTL::conv(unsigned int&, NTL::zz_p)
+ inline void conv(unsigned int& x, zz_p a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/lzz_p.h:443:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/lzz_p.h:444:13: note: candidate: void NTL::conv(long int&, NTL::zz_p)
+ inline void conv(long& x, zz_p a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/lzz_p.h:444:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/lzz_p.h:445:13: note: candidate: void NTL::conv(long unsigned int&, NTL::zz_p)
+ inline void conv(unsigned long& x, zz_p a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/lzz_p.h:445:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/lzz_p.h:446:13: note: candidate: void NTL::conv(NTL::ZZ&, NTL::zz_p)
+ inline void conv(ZZ& x, zz_p a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/lzz_p.h:446:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/lzz_p.h:449:13: note: candidate: void NTL::conv(NTL::zz_p&, NTL::zz_p)
+ inline void conv(zz_p& x, zz_p a) { x = a; }
+             ^
+/usr/local/include/NTL/lzz_p.h:449:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_p&’
+In file included from /usr/local/include/NTL/ZZX.h:6:0,
+                 from ../../include/bivariatemodularcomp.h:3,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/lzz_pX.h:309:6: note: candidate: void NTL::conv(NTL::zz_pX&, long int)
+ void conv(zz_pX& x, long a);
+      ^
+/usr/local/include/NTL/lzz_pX.h:309:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_pX&’
+/usr/local/include/NTL/lzz_pX.h:315:6: note: candidate: void NTL::conv(NTL::zz_pX&, const NTL::ZZ&)
+ void conv(zz_pX& x, const ZZ& a);
+      ^
+/usr/local/include/NTL/lzz_pX.h:315:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_pX&’
+/usr/local/include/NTL/lzz_pX.h:320:6: note: candidate: void NTL::conv(NTL::zz_pX&, NTL::zz_p)
+ void conv(zz_pX& x, zz_p a);
+      ^
+/usr/local/include/NTL/lzz_pX.h:320:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_pX&’
+/usr/local/include/NTL/lzz_pX.h:326:6: note: candidate: void NTL::conv(NTL::zz_pX&, const vec_zz_p&)
+ void conv(zz_pX& x, const vec_zz_p& a);
+      ^
+/usr/local/include/NTL/lzz_pX.h:326:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_pX&’
+/usr/local/include/NTL/lzz_pX.h:340:13: note: candidate: void NTL::conv(NTL::zz_pX&, const NTL::zz_pX&)
+ inline void conv(zz_pX& x, const zz_pX& a)
+             ^
+/usr/local/include/NTL/lzz_pX.h:340:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_pX&’
+/usr/local/include/NTL/lzz_pX.h:343:13: note: candidate: void NTL::conv(NTL::vec_zz_p&, const NTL::zz_pX&)
+ inline void conv(vec_zz_p& x, const zz_pX& a)
+             ^
+/usr/local/include/NTL/lzz_pX.h:343:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::vec_zz_p& {aka NTL::Vec<NTL::zz_p>&}’
+In file included from /usr/local/include/NTL/ZZ_pX.h:7:0,
+                 from /usr/local/include/NTL/ZZX.h:7,
+                 from ../../include/bivariatemodularcomp.h:3,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/ZZ_p.h:257:13: note: candidate: void NTL::conv(NTL::ZZ_p&, const NTL::ZZ&)
+ inline void conv(ZZ_p& x, const ZZ& a)
+             ^
+/usr/local/include/NTL/ZZ_p.h:257:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_p&’
+/usr/local/include/NTL/ZZ_p.h:265:6: note: candidate: void NTL::conv(NTL::ZZ_p&, long int)
+ void conv(ZZ_p& x, long a);
+      ^
+/usr/local/include/NTL/ZZ_p.h:265:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_p&’
+/usr/local/include/NTL/ZZ_p.h:502:13: note: candidate: void NTL::conv(int&, const NTL::ZZ_p&)
+ inline void conv(int& x, const ZZ_p& a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/ZZ_p.h:502:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘int&’
+/usr/local/include/NTL/ZZ_p.h:503:13: note: candidate: void NTL::conv(unsigned int&, const NTL::ZZ_p&)
+ inline void conv(unsigned int& x, const ZZ_p& a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/ZZ_p.h:503:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘unsigned int&’
+/usr/local/include/NTL/ZZ_p.h:504:13: note: candidate: void NTL::conv(long int&, const NTL::ZZ_p&)
+ inline void conv(long& x, const ZZ_p& a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/ZZ_p.h:504:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long int&’
+/usr/local/include/NTL/ZZ_p.h:505:13: note: candidate: void NTL::conv(long unsigned int&, const NTL::ZZ_p&)
+ inline void conv(unsigned long& x, const ZZ_p& a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/ZZ_p.h:505:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘long unsigned int&’
+/usr/local/include/NTL/ZZ_p.h:506:13: note: candidate: void NTL::conv(NTL::ZZ&, const NTL::ZZ_p&)
+ inline void conv(ZZ& x, const ZZ_p& a) { conv(x, rep(a)); }
+             ^
+/usr/local/include/NTL/ZZ_p.h:506:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ&’
+/usr/local/include/NTL/ZZ_p.h:508:13: note: candidate: void NTL::conv(NTL::ZZ_p&, const NTL::ZZ_p&)
+ inline void conv(ZZ_p& x, const ZZ_p& a) { x = a; }
+             ^
+/usr/local/include/NTL/ZZ_p.h:508:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_p&’
+In file included from /usr/local/include/NTL/ZZX.h:7:0,
+                 from ../../include/bivariatemodularcomp.h:3,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/ZZ_pX.h:302:6: note: candidate: void NTL::conv(NTL::ZZ_pX&, long int)
+ void conv(ZZ_pX& x, long a);
+      ^
+/usr/local/include/NTL/ZZ_pX.h:302:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_pX&’
+/usr/local/include/NTL/ZZ_pX.h:303:6: note: candidate: void NTL::conv(NTL::ZZ_pX&, const NTL::ZZ&)
+ void conv(ZZ_pX& x, const ZZ& a);
+      ^
+/usr/local/include/NTL/ZZ_pX.h:303:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_pX&’
+/usr/local/include/NTL/ZZ_pX.h:304:6: note: candidate: void NTL::conv(NTL::ZZ_pX&, const NTL::ZZ_p&)
+ void conv(ZZ_pX& x, const ZZ_p& a);
+      ^
+/usr/local/include/NTL/ZZ_pX.h:304:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_pX&’
+/usr/local/include/NTL/ZZ_pX.h:305:6: note: candidate: void NTL::conv(NTL::ZZ_pX&, const vec_ZZ_p&)
+ void conv(ZZ_pX& x, const vec_ZZ_p& a);
+      ^
+/usr/local/include/NTL/ZZ_pX.h:305:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_pX&’
+/usr/local/include/NTL/ZZ_pX.h:325:13: note: candidate: void NTL::conv(NTL::ZZ_pX&, const NTL::ZZ_pX&)
+ inline void conv(ZZ_pX& x, const ZZ_pX& a)
+             ^
+/usr/local/include/NTL/ZZ_pX.h:325:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_pX&’
+/usr/local/include/NTL/ZZ_pX.h:328:13: note: candidate: void NTL::conv(NTL::vec_ZZ_p&, const NTL::ZZ_pX&)
+ inline void conv(vec_ZZ_p& x, const ZZ_pX& a)
+             ^
+/usr/local/include/NTL/ZZ_pX.h:328:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::vec_ZZ_p& {aka NTL::Vec<NTL::ZZ_p>&}’
+In file included from ../../include/bivariatemodularcomp.h:3:0,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/ZZX.h:271:6: note: candidate: void NTL::conv(NTL::ZZX&, long int)
+ void conv(ZZX& x, long a);
+      ^
+/usr/local/include/NTL/ZZX.h:271:6: note:   no known conversion for argument 2 from ‘NTL::Vec<NTL::ZZ>’ to ‘long int’
+/usr/local/include/NTL/ZZX.h:278:6: note: candidate: void NTL::conv(NTL::ZZX&, const NTL::ZZ&)
+ void conv(ZZX& x, const ZZ& a);
+      ^
+/usr/local/include/NTL/ZZX.h:278:6: note:   no known conversion for argument 2 from ‘NTL::Vec<NTL::ZZ>’ to ‘const NTL::ZZ&’
+/usr/local/include/NTL/ZZX.h:285:6: note: candidate: void NTL::conv(NTL::ZZX&, const vec_ZZ&) <near match>
+ void conv(ZZX& x, const vec_ZZ& a);
+      ^
+/usr/local/include/NTL/ZZX.h:285:6: note:   conversion of argument 1 would be ill-formed:
+hermite_pade.cpp:47:15: error: binding ‘const NTL::ZZX’ to reference of type ‘NTL::ZZX&’ discards qualifiers
+   conv(f, f_ZZ);
+               ^
+In file included from ../../include/bivariatemodularcomp.h:3:0,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/ZZX.h:289:6: note: candidate: void NTL::conv(NTL::zz_pX&, const NTL::ZZX&)
+ void conv(zz_pX& x, const ZZX& a);
+      ^
+/usr/local/include/NTL/ZZX.h:289:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::zz_pX&’
+/usr/local/include/NTL/ZZX.h:293:6: note: candidate: void NTL::conv(NTL::ZZ_pX&, const NTL::ZZX&)
+ void conv(ZZ_pX& x, const ZZX& a);
+      ^
+/usr/local/include/NTL/ZZX.h:293:6: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::ZZ_pX&’
+/usr/local/include/NTL/ZZX.h:297:6: note: candidate: void NTL::conv(NTL::ZZX&, const NTL::ZZ_pX&)
+ void conv(ZZX& x, const ZZ_pX& a);
+      ^
+/usr/local/include/NTL/ZZX.h:297:6: note:   no known conversion for argument 2 from ‘NTL::Vec<NTL::ZZ>’ to ‘const NTL::ZZ_pX&’
+/usr/local/include/NTL/ZZX.h:301:6: note: candidate: void NTL::conv(NTL::ZZX&, const NTL::zz_pX&)
+ void conv(ZZX& x, const zz_pX& a);
+      ^
+/usr/local/include/NTL/ZZX.h:301:6: note:   no known conversion for argument 2 from ‘NTL::Vec<NTL::ZZ>’ to ‘const NTL::zz_pX&’
+/usr/local/include/NTL/ZZX.h:310:13: note: candidate: void NTL::conv(NTL::ZZX&, const NTL::ZZX&)
+ inline void conv(ZZX& x, const ZZX& a)
+             ^
+/usr/local/include/NTL/ZZX.h:310:13: note:   no known conversion for argument 2 from ‘NTL::Vec<NTL::ZZ>’ to ‘const NTL::ZZX&’
+/usr/local/include/NTL/ZZX.h:313:13: note: candidate: void NTL::conv(NTL::vec_ZZ&, const NTL::ZZX&)
+ inline void conv(vec_ZZ& x, const ZZX& a)
+             ^
+/usr/local/include/NTL/ZZX.h:313:13: note:   no known conversion for argument 1 from ‘const NTL::ZZX’ to ‘NTL::vec_ZZ& {aka NTL::Vec<NTL::ZZ>&}’
+In file included from ../../include/bivariatemodularcomp.h:7:0,
+                 from ../../include/hermite_pade.h:4,
+                 from hermite_pade.cpp:1:
+/usr/local/include/NTL/matrix.h:243:6: note: candidate: template<class T, class S> void NTL::conv(NTL::Mat<T>&, const NTL::Mat<S>&)
+ void conv(Mat<T>& x, const Mat<S>& a)
+      ^
+/usr/local/include/NTL/matrix.h:243:6: note:   template argument deduction/substitution failed:
+hermite_pade.cpp:47:15: note:   types ‘NTL::Mat<T>’ and ‘const NTL::ZZX’ have incompatible cv-qualifiers
+   conv(f, f_ZZ);
+               ^
+make: *** [../../lib/hermite_pade.o] Error 1

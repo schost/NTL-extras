@@ -14,6 +14,7 @@ all:	clean
 	cd cauchy_like_geometric_special/src ; make
 	cd mosaic_hankel/src ; make
 	cd bivariatemodularcomp/src ; make
+	cd hermite_pade/src; make
 
 clean:
 	rm -f lib/*
@@ -42,4 +43,4 @@ clean:
 	cd bivariate/test ; make clean
 	cd cauchy_like_geometric_special/test ; make clean
 	cd mosaic_hankel/test ; make clean
-
+	cd hermite_pade/src; make clean
