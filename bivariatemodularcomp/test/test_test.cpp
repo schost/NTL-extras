@@ -78,6 +78,6 @@ int main (){
   auto m2 = p.mult_Horners(rhs);
  //auto m4 = p.mult_Horners(rhs2);
   cout << "Horner's rule took: " << clock()-t <<  endl;
-  fout << "Horner's: " << m2 << endl;
+  fout << "Horner: " << m2 << endl;
   cout << "equal? " << boolalpha << (m1 == m2) << endl;
 }
