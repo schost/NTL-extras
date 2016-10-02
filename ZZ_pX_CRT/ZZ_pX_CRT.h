@@ -65,6 +65,8 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
   /* basic operations                                           */
   /*------------------------------------------------------------*/
   void evaluate(Vec<ZZ_p>& val, const ZZ_pX& f) const;
+  void mul_right(Vec<ZZ_p>& output, const Vec<ZZ_p>& input) const;
+  void mul_left(Vec<ZZ_p>& output, const Vec<ZZ_p>& input) const;
 
   void interpolate(ZZ_pX& f, const Vec<ZZ_p>& val) const{
     LogicError("inverse TFT not implemented");
@@ -73,6 +75,11 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
   ~ZZ_pX_Multipoint_FFT(){};
 
  private:
+  /*------------------------------------------------------------*/
+  /* main helper function for mul_right and evaluate            */
+  /*------------------------------------------------------------*/
+  void evaluate_doit(Vec<ZZ_p>& val, const Vec<ZZ_p>& a) const;
+
   long k, max_n;
   Vec<Vec<ZZ_p>> powersW;
   Vec<ZZ_p> powersC, inv_powersC;
