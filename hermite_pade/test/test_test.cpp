@@ -2,16 +2,16 @@
 
 int main(int argc, char* argv[]){
   ZZX f;
-  ZZ x;
-  int N = 0;
-  while (cin >> x) {
-    SetCoeff(f,N++,x);
+  int N = 8;
+  for(long x = 1; x <= N; x++){
+    SetCoeff(f,x-1,x);
   }
-  //cout << f << endl;
+  cout << "f: " << f << endl;
   Vec<long> type;
   type.append(3);
   type.append(4);
-  hermite_pade hp(f,type,N,stoi(argv[1]));
+  cout << "type: " << type << endl;
+  hermite_pade hp(f,type,N,10);
   Vec<Vec<ZZ>> v;
   hp.find_rand_sol(v);
   cout << v << endl;
