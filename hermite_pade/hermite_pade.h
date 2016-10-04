@@ -38,15 +38,15 @@ class hermite_pade{
   bool can_reconstruct(const Vec<ZZ_p> &v, long n);
 
   // computes (D_e X_int) M (D_f Y_int)^t * b
-  void mulA_right (Vec<ZZ_p> &x, Vec<ZZ_p> b);
+  Vec<ZZ> mulA_right (Vec<ZZ_p> b);
 
   // computes x = Diagonal_d * a where Diagonal_d is the diagonal matrix constructed from d
-  void mul_diagonal_right (Vec<ZZ_p> &x, const Vec<ZZ_p> &d, const Vec<ZZ_p> &a);
+  void mul_diagonal_right (Vec<ZZ_p> &x,const Vec<ZZ_p> &d, const Vec<ZZ_p> &a);
   
   // returns each block of v (based on the type) flipped
   Vec<ZZ_p> flip_on_type (const Vec<ZZ_p> &v);
   
-  void find_original_sol(Vec<ZZ_p> &x, const Vec<ZZ_p> &b);
+  Vec<ZZ> find_original_sol(const Vec<ZZ_p> &b);
   
   // solves for Mx = b mod p^2^n
   void DAC (Vec<ZZ_p> &x, const Vec<ZZ_p> &b, long n);
@@ -54,6 +54,8 @@ class hermite_pade{
   void reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n);
   
   Vec<Vec<ZZ>> flip_on_type(const Vec<Vec<ZZ>> &v);
+  
+  void dostuff();
 
   public:
   /** Ctor ***********************************************

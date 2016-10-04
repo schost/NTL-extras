@@ -1,4 +1,7 @@
 #include "hermite_pade.h"
+#include <random>
+#include <functional>	
+#include <time.h>
 
 Vec<ZZ_p> construct_diagonal (ZZ c, long n){
   ZZ_p c_p;
@@ -48,6 +51,7 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   p = zz_p::modulus();
   ZZ_p::init(ZZ(p));
   p_powers.append(ZZ(p));
+  cout << "p: " << p << endl;
   long prec = deg(f) + 1;
   f_full_prec = f;
   this->type = type;
@@ -79,7 +83,7 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   zz_pX_Multipoint_Geometric X_int, Y_int; // preconditioners
   Vec<zz_p> e_zz_p, f_zz_p; // the diagonal matrices
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
-  rank = invert_fast(invA,CL); // inverting M mod p
+  rank = invert(invA,CL); // inverting M mod p
   sizeX = X_int.length();
   sizeY = Y_int.length();
 
@@ -123,6 +127,15 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   this->X_int = &vec_X_int[0];
   this->Y_int = &vec_Y_int[0];
   this->CL = CL;
+  cout << "RANK: " << rank << endl;
+  Mat<zz_p>mat;
+  to_dense(mat,MH);
+  cout << "MH" << endl;
+  cout << mat << endl;
+  to_dense(mat,CL);
+  cout << "CL:" << endl;
+  cout << mat << endl;
+  //dostuff();
 }
 
 void hermite_pade::switch_context(long n){
@@ -146,7 +159,7 @@ void hermite_pade::switch_context(long n){
     ZZ new_w;
     lift_root_of_unity(new_w, this->w, order, p, pow2);
     ZZ_p w_p, c_p, d_p;
-    conv(w_p,w);
+    conv(w_p,new_w);
     conv(c_p,c);
     conv(d_p,d);
     ZZ_pX_Multipoint_FFT X_new (w_p, c_p, sizeX);
@@ -161,7 +174,6 @@ void hermite_pade::switch_context(long n){
   }
 }
 
-
 long hermite_pade::find_order(zz_p w){
   if (w == zz_p(1))
     return 1;
@@ -169,10 +181,35 @@ long hermite_pade::find_order(zz_p w){
     return 2 * find_order(power(w,2));
 }
 
-void hermite_pade::mulA_right(Vec<ZZ_p> &x, Vec<ZZ_p> b){
+void hermite_pade::dostuff(){
+  Vec<ZZ_p> extractor; // mult with A to get a column
+  extractor.SetLength(sizeY, ZZ_p(0));
+  extractor[rank] = 1; // just for now, take the last column
+  for (long i = 0; i < 6; i++){
+  	switch_context(i);
+  	Vec<ZZ_p> b = conv<Vec<ZZ_p>>(mulA_right(extractor));
+  	Vec<ZZ_p> x;
+  	DAC(x,b,i);
+  	x.append(ZZ_p(-1));
+  	x = conv<Vec<ZZ_p>>(find_original_sol(x));
+  	cout << x << endl;
+  	
+  	if(i == 5){
+  		Vec<Vec<ZZ>> sol;
+  		reconstruct(sol,x,5);
+  		cout << sol << endl;
+  		sol = flip_on_type(sol);
+  		cout << sol << endl;
+  	}
+  }
+  
+}
+
+Vec<ZZ> hermite_pade::mulA_right(Vec<ZZ_p> b){
   // Y_int = D_d * Y_int * D_d^(-1)
   // D_e X_int M Y_int^t D_f
   b.SetLength(sizeY, ZZ_p(0)); // padding it
+  Vec<ZZ_p> x,e(this->e),f(this->f);
   ZZ_pX temp;
   Vec<ZZ_p> D_d = construct_diagonal(this->d, sizeY);
   Vec<ZZ_p> invD_d = invert_diagonal(D_d);
@@ -185,10 +222,12 @@ void hermite_pade::mulA_right(Vec<ZZ_p> &x, Vec<ZZ_p> b){
   conv(temp, x);
   X_int->evaluate(x,temp);
   mul_diagonal_right(x,e,x);
+  return conv<Vec<ZZ>>(x);
 }
 
-void hermite_pade::find_original_sol(Vec<ZZ_p> &x, const Vec<ZZ_p> &b){
+Vec<ZZ> hermite_pade::find_original_sol(const Vec<ZZ_p> &b){
   ZZ_pX temp;
+  Vec<ZZ_p> x,f(this->f);
   Vec<ZZ_p> D_d = construct_diagonal(this->d, sizeY);
   Vec<ZZ_p> invD_d = invert_diagonal(D_d);
   mul_diagonal_right(x,f,b);
@@ -196,6 +235,7 @@ void hermite_pade::find_original_sol(Vec<ZZ_p> &x, const Vec<ZZ_p> &b){
   conv(temp, x);
   Y_int->evaluate(x,temp);
   mul_diagonal_right(x,D_d,x);
+  return conv<Vec<ZZ>>(x);
 }
 
 void hermite_pade::mul_diagonal_right(Vec<ZZ_p> &x, const Vec<ZZ_p> &b, const Vec<ZZ_p> &a){
@@ -205,8 +245,12 @@ void hermite_pade::mul_diagonal_right(Vec<ZZ_p> &x, const Vec<ZZ_p> &b, const Ve
     x[i] = b[i] * a[i];
 }
 
-void hermite_pade::DAC(Vec<ZZ_p> &x, const Vec<ZZ_p>& b, long n){
+void hermite_pade::DAC(Vec<ZZ_p> &x, const Vec<ZZ_p>& b_in, long n){
+  Vec<ZZ> b_ZZ;
+  conv(b_ZZ,b_in);
   switch_context(n);
+  Vec<ZZ_p> b;
+  conv(b,b_ZZ);
   if (n == 0){ // since p^2^0 == p 
     Vec<zz_p> x_zz_p;
     Vec<zz_p> b_zz_p;
@@ -224,12 +268,13 @@ void hermite_pade::DAC(Vec<ZZ_p> &x, const Vec<ZZ_p>& b, long n){
   DAC(x_0, b, n-1); // first recursive call
   switch_context(n);
   Vec<ZZ_p> r; // the error
-  mulA_right(r,x_0);
+  r = conv<Vec<ZZ_p>>(mulA_right(x_0));
   r = r - b;
   Vec<ZZ> r_ZZ;
   conv(r_ZZ, r);
-  for (long i = 0; i < r.length(); i++)
+  for (long i = 0; i < r.length(); i++){
     r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
+    }	
   conv(r,r_ZZ);
   DAC(x_1,r,n-1);
   switch_context(n);
@@ -240,11 +285,13 @@ void hermite_pade::DAC(Vec<ZZ_p> &x, const Vec<ZZ_p>& b, long n){
 }
 
 bool hermite_pade::can_reconstruct(const Vec<ZZ_p> &v, long n){
-  if (n == 0) return false;
+  if (n != 0) return false;
   for (long i = 0; i < v.length(); i++){
     ZZ a,b;
-    long result = ReconstructRational(a,b,conv<ZZ>(v[i]),p_powers[n], p_powers[n-1], p_powers[n-1]);
-    if (result == 0) return false;
+    try{
+    	long result = ReconstructRational(a,b,conv<ZZ>(v[i]),p_powers[n], p_powers[n-1], p_powers[n-1]);
+        if (result == 0) return false;
+    }catch(...){return false;}
   }
   return true;
 }
@@ -265,7 +312,7 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   Vec<ZZ_p> extractor; // mult with A to get a column
   extractor.SetLength(sizeY, ZZ_p(0));
   extractor[rank] = 1; // just for now, take the last column
-  mulA_right(b,extractor); // b is the last column of A
+  b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
   long n = 0; // start at p^2^n
   Vec<ZZ_p> x,x_1,soln;
   DAC(x,b,n); // solution mod p
@@ -274,35 +321,50 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   long x_length = x.length();
   x.SetLength(sizeY,ZZ_p(0));
   x[rank] = -1;
-  find_original_sol(soln,x);
+  soln = conv<Vec<ZZ_p>>(find_original_sol(x));
   x.SetLength(x_length);
   
+  Vec<ZZ> soln_ZZ,x_ZZ;
+  conv(soln_ZZ,soln);
+  conv(x_ZZ, x);
+  
   // loop until we get enough prec
-  while(!can_reconstruct(soln,n)){
+  while(!can_reconstruct(conv<Vec<ZZ_p>>(soln_ZZ),n)){
     switch_context(++n);
-    mulA_right(b,extractor); // lifts b
+  	Vec<ZZ_p> b; // rhs of the equation Ax = b
+  	Vec<ZZ_p> extractor; // mult with A to get a column
+  	extractor.SetLength(sizeY, ZZ_p(0));
+  	extractor[rank] = 1; // just for now, take the last column
+  	b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
+  	Vec<ZZ_p> x,x_1,soln;
+  	conv(x,x_ZZ);
+  	x.SetLength(sizeX);
     Vec<ZZ_p> r; // the error
-    mulA_right(r,x);
+    r = conv<Vec<ZZ_p>>(mulA_right(x));
     r = r - b;
     Vec<ZZ> r_ZZ;
     conv(r_ZZ,r);
-    for (long i = 0; i < r.length(); i++)
-    	r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
+  	for (long i = 0; i < r.length(); i++){
+   		r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
+   	}	
     conv(r,r_ZZ);
     DAC(x_1,r,n-1);
     switch_context(n);
     ZZ_p p_pow;
     conv(p_pow, p_powers[n-1]);
+    cout << "X: " << x << endl;
+    cout << "X1: " << x_1 << endl;
     x = x - p_pow * x_1;
     
     // padding x
     x.SetLength(sizeY,ZZ_p(0));
   	x[rank] = -1;
-  	find_original_sol(soln,x);
-    find_original_sol(soln,x);
-    x.SetLength(x_length);
+  	soln = conv<Vec<ZZ_p>>(find_original_sol(x));
+  	x.SetLength(x_length);
+    conv(soln_ZZ, soln);
+    conv(x_ZZ,x);
   }
-  reconstruct(sol,soln,n);
+  reconstruct(sol,conv<Vec<ZZ_p>>(soln_ZZ),n);
   sol = flip_on_type(sol);
 }
 
