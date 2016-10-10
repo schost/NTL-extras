@@ -17,7 +17,7 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
   for (long i = 0; i < sqrtP; i++){
     fs.append(running);
     running *= f;
-    trunc(running,prec);
+    trunc(running,running,prec);
   }
   F_field = running;
   create_rhs_matrix(B,fs);
