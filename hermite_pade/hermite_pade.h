@@ -26,6 +26,9 @@ class hermite_pade{
   long w; // w mod p
   long order; // order of w
   long p, prec, sizeX, sizeY;
+  long added; // number of rows added
+  Vec<long> diagonals1;
+  Vec<long> diagonals2;
 
   /**** helpers *****************************************/ 
   // switches the field to mod p^2^n
@@ -54,6 +57,12 @@ class hermite_pade{
   void reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n);
   
   Vec<Vec<ZZ>> flip_on_type(const Vec<Vec<ZZ>> &v);
+  
+  Vec<hankel> create_random_hankel_on_type(long rows, const Vec<long> &type);
+  
+  hankel create_random_hankel (long rows, long cols);
+  
+  Vec<ZZ_p> mul_bottom_mosaic_diagonal(const Vec<ZZ_p>&, long);
   
   void dostuff();
 
