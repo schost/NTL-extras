@@ -1,8 +1,39 @@
 #include <NTL/ZZX.h>
 #include <NTL/lzz_pX.h>
 #include <NTL/vector.h>
+#include <NTL/matrix.h>
+
+#include "magma_output.h"
 
 NTL_CLIENT
+
+
+/*------------------------------------------------------------*/
+/* prints a matrix                                            */
+/*------------------------------------------------------------*/
+void magma_output(const Mat<zz_p> & v){
+  if (v.NumRows() == 0){
+    cout << "[[]]";
+    return;
+  }
+  cout << "Matrix(GF(" << zz_p::modulus() << "), [";
+  for (long i = 0; i < v.NumRows()-1; i++){
+    magma_output(v[i]);
+    cout << ", ";
+  }
+  magma_output(v[v.NumRows()-1]);
+  cout << "])";
+}
+
+/*------------------------------------------------------------*/
+/* assigns a vector to variable "name"                        */
+/*------------------------------------------------------------*/
+void magma_assign(const Mat<zz_p> & v, const string & name){
+  cout << name << " := ";
+  magma_output(v);
+  cout << ";" << endl;
+}
+
 
 /*------------------------------------------------------------*/
 /* prints a vector                                            */

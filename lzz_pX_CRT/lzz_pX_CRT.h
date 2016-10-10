@@ -165,6 +165,7 @@ class zz_pX_Multipoint_Geometric : public zz_pX_Multipoint{
 /*------------------------------------------------------------*/
 void to_dense(Mat<zz_p>& M, const zz_pX_Multipoint_Geometric& X);
 
+
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
 /* multipoint evaluation over zz_p                            */
@@ -209,13 +210,113 @@ class zz_pX_Multipoint_FFT : public zz_pX_Multipoint{
 };
 
 
+
+
+
+
+/*---------------------------------------------------------*/
+/*---------------------------------------------------------*/
+/* a class that contains precomputed information           */
+/* for negacyclic convolution                              */
+/* z, z_precomp are multipliers for forward transform      */
+/* invz, invz_precomp are for the inverse transform        */
+/*---------------------------------------------------------*/
+/*---------------------------------------------------------*/
+
+class zz_pX_Multipoint_CTFT : public zz_pX_Multipoint {
+ public:
+
+  /*------------------------------------------------------------*/
+  /* basic operations                                           */
+  /*------------------------------------------------------------*/
+  void evaluate(Vec<zz_p>& val, const zz_pX& f) const;
+  void evaluate(Vec<Vec<zz_p>>& val, const Vec<zz_pX>& f) const {}
+  void interpolate(zz_pX& f, const Vec<zz_p>& val) const;
+  
+  ~zz_pX_Multipoint_CTFT(){};
+ 
+  /*--------------------------------------------------------------*/
+  /* initializes the k-th row of pre-multipliers for negacyclic   */
+  /* convolution (== in size 2^k)                                 */
+  /*--------------------------------------------------------------*/
+  void init_multipliers(const long k);
+  
+  /*-----------------------------------------------------------*/
+  /* applies the multi-reduction map to f (mod p), in place    */
+  /* input is in [0,p), output is in [0,2p)                    */
+  /* x must have size at least 2n, and upper half must be zero */
+  /*-----------------------------------------------------------*/
+  void reduce(long* f) const;
+ 
+  /*-----------------------------------------------------------*/
+  /* applies the CRT map to x (mod p), in place                */
+  /* x has length n                                            */
+  /* input is in [0,p), output is in [0,p)                     */
+  /* tmp is a temporary workspace, of length at least 2n       */
+  /*-----------------------------------------------------------*/
+  void CRT(long* x, long *tmp) const;
+
+
+  zz_pX_Multipoint_CTFT(){}
+  zz_pX_Multipoint_CTFT(long index_in){
+    MaxK = -1;
+    n = index_in;
+    init_multipliers(NextPowerOfTwo(n));
+    init_points();
+  }
+
+
+ private:
+  long MaxK;
+  Vec< Vec<long> > z;
+  Vec< Vec<mulmod_precon_t> > z_precomp;
+  Vec< Vec<long> > invz;
+  Vec< Vec<mulmod_precon_t> > invz_precomp;
+
+  /*-----------------------------------------------------------*/
+  /* sets all entries in the vector pts                        */ 
+  /*-----------------------------------------------------------*/
+  void init_points();
+
+  /*-----------------------------------------------------------*/
+  /* evaluates a chunk of length 2^k                           */
+  /* input length = 2^k                                        */
+  /* input is word-size, output is in [0,p)                    */
+  /* wk is a workspace of length 2^k                           */
+  /*-----------------------------------------------------------*/
+  void evaluate_chunk(zz_p * val, const long * coeffs, const long k, long * wk) const;
+ 
+ /*------------------------------------------------------------*/
+  /* interpolates a chunk of length 2^k                        */
+  /* input length = 2^k                                        */
+  /* wk is a workspace of length 2^k                           */
+  /*-----------------------------------------------------------*/
+  void interpolate_chunk(long * val, const zz_p * coeffs, const long k, long * wk) const;
+ 
+  /*-----------------------------------------------------------*/
+  /* applies postmultiplier after negacyclic convolution       */
+  /* input length = 2^k                                        */
+  /* input is word-size, output is in [0,p)                    */
+  /* incorporates the division by 2^k for FFT^(-1)             */
+  /*-----------------------------------------------------------*/
+  void rescale_inverse(long *y, const long* x, const long k);
+};
+
+/*--------------------------------------------------------------*/
+/* returns the exponents ki such that                           */
+/*    n = sum_i 2^k_i                                           */
+/*--------------------------------------------------------------*/
+void CTFT_exponents(Vec<long>& expo, const long nn);
+
+
+
+
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
-/* Chinese Remaindernig over zz_p                             */
+/* Chinese Remaindering over zz_p                             */
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
 class zz_pX_CRT{
-  
  public:
   
   /*------------------------------------------------------------*/
@@ -265,7 +366,5 @@ class zz_pX_CRT{
   Vec<Vec<zz_pX>> tree;
 
 };
-
-
 
 #endif
