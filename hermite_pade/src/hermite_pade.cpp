@@ -48,6 +48,7 @@ Vec<Vec<ZZ>> hermite_pade::flip_on_type (const Vec<Vec<ZZ>> &v){
 
 hankel hermite_pade::create_random_hankel (long rows, long cols){
   Vec<zz_p> running;
+  cout << "rows: " << rows << " cols: " << cols << endl;
   cout << "R: " << rows+cols-1 << endl;
   running.SetLength(rows+cols-1, zz_p(0));
   long random1 = std::rand()%1000;
@@ -67,6 +68,7 @@ hankel hermite_pade::create_random_hankel (long rows, long cols){
 
 Vec<hankel> hermite_pade::create_random_hankel_on_type(long rows, const Vec<long> &type){
   Vec<hankel> mh;
+  cout << "needed rows: " << rows << endl;
   for (long i = 0; i < type.length(); i++)
     mh.append(create_random_hankel(rows,type[i]+1));
   return mh;
@@ -74,6 +76,10 @@ Vec<hankel> hermite_pade::create_random_hankel_on_type(long rows, const Vec<long
 
 // multiplication of left diagonal matrices
 Vec<ZZ_p> hermite_pade::mul_bottom_mosaic_diagonal(const Vec<ZZ_p> &v, long rows){
+	if (added == 0){
+		Vec<ZZ_p> empty;		
+		return empty;
+	}
   Vec<ZZ_p> diag_ZZ_p1, diag_ZZ_p2;
   Vec<Vec<ZZ_p>> partial_results;
   conv(diag_ZZ_p1, diagonals1);
@@ -156,6 +162,7 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   cout << "original rank: " << rank << endl;
 
   cout << "type_sum: " << type_sum << endl;
+  added = 0;
   if (rank < type_sum-1){
   	long diff = this->prec - rank;
   	added = diff;
@@ -371,7 +378,7 @@ void hermite_pade::DAC(Vec<ZZ_p> &x, const Vec<ZZ_p>& b_in, long n){
 }
 
 bool hermite_pade::can_reconstruct(const Vec<ZZ_p> &v, long n){
-  if (n <= 3) return false;
+  if (n <= 2) return false;
   for (long i = 0; i < v.length(); i++){
     ZZ a,b;
     try{
@@ -423,8 +430,6 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   DAC(x,b,n); // solution mod p
   Mat<zz_p> mat;
   to_dense(mat,CL);
-  cout << "MAT: " << mat << endl;
-  cout << "B: " << b << endl;
   
   // padding x
   long x_length = x.length();
@@ -432,6 +437,8 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   x[rank] = -1;
   soln = conv<Vec<ZZ_p>>(find_original_sol(x));
   x.SetLength(x_length);
+  cout << "soln: " << soln << endl;
+  cout << "init check: " << M->mult(flip_on_type(soln)) << endl;
   
   Vec<ZZ> soln_ZZ,x_ZZ;
   conv(soln_ZZ,soln);
@@ -454,6 +461,7 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
     Vec<ZZ> r_ZZ;
     conv(r_ZZ,r);
   	for (long i = 0; i < r.length(); i++){
+  		cout << "check R: " << r_ZZ[i] % p_powers[0] << endl;
    		r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
    	}	
     conv(r,r_ZZ);
@@ -466,16 +474,19 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
     // padding x
     x.SetLength(sizeY,ZZ_p(0));
   	x[rank] = -1;
-  	cout << "MULA: " << mulA_right(x) << endl;
+  	//cout << "MUL A: " << mulA_right(x) << endl;
   	soln = conv<Vec<ZZ_p>>(find_original_sol(x));
   	ZZ_p first;
     for (long i = 0; i < soln.length(); i++)
-      if (soln[i] != ZZ_p(0)){
+      if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
         first = soln[i];
+        cout << "i: " << i << endl;
         break;
       }
-    for (long i = 0; i < soln.length(); i++)
+   // cout << "first: " << first   << endl;
+    for (long i = 0; i < soln.length(); i++){
       soln[i] = soln[i] / first;
+    }
     cout << "check: " << M->mult(flip_on_type(soln)) << endl;
   	x.SetLength(x_length);
     conv(soln_ZZ, soln);
