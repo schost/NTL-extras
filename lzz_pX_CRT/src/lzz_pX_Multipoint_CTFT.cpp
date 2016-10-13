@@ -356,7 +356,7 @@ void zz_pX_Multipoint_CTFT::interpolate_chunk(long * val, const zz_p * coeffs, c
 /*---------------------------------------------------------*/
 /* evaluates A at n points                                 */
 /*---------------------------------------------------------*/
-void zz_pX_Multipoint_CTFT::evaluate(Vec<zz_p>& val, const zz_pX& A) const {
+void zz_pX_Multipoint_CTFT::evaluate(Vec<zz_p>& val, const long * A, const long n0) const {
 
   val.SetLength(n);
 
@@ -364,7 +364,7 @@ void zz_pX_Multipoint_CTFT::evaluate(Vec<zz_p>& val, const zz_pX& A) const {
     return;
 
   if (n == 1){
-    val[0] = coeff(A, 0);
+    val[0] = A[0];
     return;
   }
 
@@ -375,10 +375,8 @@ void zz_pX_Multipoint_CTFT::evaluate(Vec<zz_p>& val, const zz_pX& A) const {
   long *wk = wk_vec.elts();
   long *wk2 = wk + 2*n;
 
-  const zz_p *a = A.rep.elts();
-  long n0 = A.rep.length();
   for (long i = 0; i < n0; i++)
-    wk[i] = a[i]._zz_p__rep;
+    wk[i] = A[i];
   for (long i = n0; i < 3*n; i++)
     wk[i] = 0;
   reduce(wk);
@@ -407,6 +405,22 @@ void zz_pX_Multipoint_CTFT::evaluate(Vec<zz_p>& val, const zz_pX& A) const {
     }
   }
   while (nn != 0);
+}
+
+/*---------------------------------------------------------*/
+/* evaluates A at n points                                 */
+/*---------------------------------------------------------*/
+void zz_pX_Multipoint_CTFT::evaluate(Vec<zz_p>& val, const zz_pX& A) const {
+
+  const zz_p *a = A.rep.elts();
+  Vec<long> vA;
+  long n0 = A.rep.length();
+  vA.SetLength(n0);
+  long * vAe = vA.elts();
+  for (long i = 0; i < n0; i++)
+    vAe[i] = a[i]._zz_p__rep;
+
+  evaluate(val, vAe, n0);
 }
 
 /*---------------------------------------------------------*/

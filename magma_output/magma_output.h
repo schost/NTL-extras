@@ -71,6 +71,16 @@ void magma_output(const Vec<long> & v);
 void magma_assign(const Vec<long> & v, const string & name);
 
 /*------------------------------------------------------------*/
+/* prints a vector                                            */
+/*------------------------------------------------------------*/
+void magma_output(const Vec<unsigned long> & v);
+
+/*------------------------------------------------------------*/
+/* assigns a vector to variable "name"                        */
+/*------------------------------------------------------------*/
+void magma_assign(const Vec<unsigned long> & v, const string & name);
+
+/*------------------------------------------------------------*/
 /* initializes GF(p)                                          */
 /*------------------------------------------------------------*/
 void magma_init();

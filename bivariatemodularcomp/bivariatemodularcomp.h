@@ -20,15 +20,15 @@ class BivariateModularComp {
   *******************************************************************/
   // partitions the given vector into blocks from the given type and
   // converts each block into polynomials
-  NTL::Vec<NTL::ZZ_pX> create_lhs_list (const NTL::Vec<NTL::ZZ_p>&);
+  void create_lhs_list (NTL::Vec<NTL::ZZ_pX>&, const NTL::Vec<NTL::ZZ_p>&);
   // given the result of create_lhs_list, returns a matrix representation
   // with dimension ceil(len(type)/sqrtP) x sqrtP
-  void create_lhs_matrix (NTL::Mat<NTL::ZZ_pX>&,const NTL::Vec<NTL::ZZ_pX>&);
+  void create_lhs_matrix (NTL::Mat<NTL::ZZ_pX>&, const NTL::Vec<NTL::ZZ_pX>&);
   // creates a matrix of f^i for i = 0..sqrtP-1, and partitions each f^i
   // into len(type)-slices (number of blocks)
-  void create_rhs_matrix (NTL::Mat<NTL::ZZ_pX>&,const NTL::Vec<NTL::ZZ_pX>&);
+  void create_rhs_matrix (NTL::Mat<NTL::ZZ_pX>&, const NTL::Vec<NTL::ZZ_pX>&);
   // converts the sliced up functions into one
-  void deslice (NTL::Mat<NTL::ZZ_pX>&,const NTL::Mat<NTL::ZZ_pX> &);
+  void deslice (NTL::Vec<NTL::ZZ_pX>&, const NTL::Mat<NTL::ZZ_pX> &);
 
 public:
   // the constructor takes in the polynomial (full precision), type and precision the answer should be
