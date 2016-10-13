@@ -28,6 +28,9 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
     fs[i] = running;
     multF.mul(running, running);
     trunc(running, running, prec);
+    // fs.append(running);
+    // running *= f;
+    // trunc(running,running,prec);
   }
   cout << "[" << GetTime() - t << " ";
 

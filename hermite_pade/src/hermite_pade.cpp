@@ -1,7 +1,7 @@
 #include "hermite_pade.h"
-#include <random>
-#include <functional>	
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
 Vec<ZZ_p> construct_diagonal (ZZ c, long n){
   ZZ_p c_p;
@@ -46,7 +46,72 @@ Vec<Vec<ZZ>> hermite_pade::flip_on_type (const Vec<Vec<ZZ>> &v){
   return r;
 }
 
+hankel hermite_pade::create_random_hankel (long rows, long cols){
+  Vec<zz_p> running;
+  cout << "rows: " << rows << " cols: " << cols << endl;
+  cout << "R: " << rows+cols-1 << endl;
+  running.SetLength(rows+cols-1, zz_p(0));
+  long random1 = std::rand()%1000;
+  long random2 = std::rand()%1000;
+  running[rows-1] = random1;
+  if (rows-1 != 0)
+    running[rows-2] = random2;
+  diagonals1.append(random1);
+  diagonals2.append(random2);
+  Mat<zz_p> m;
+  to_dense(m, hankel(running,rows,cols));
+  cout << running << endl;
+  cout << "Hankel: " << endl;
+  cout << m << endl;
+  return hankel(running, rows, cols);
+}
+
+Vec<hankel> hermite_pade::create_random_hankel_on_type(long rows, const Vec<long> &type){
+  Vec<hankel> mh;
+  cout << "needed rows: " << rows << endl;
+  for (long i = 0; i < type.length(); i++)
+    mh.append(create_random_hankel(rows,type[i]+1));
+  return mh;
+}
+
+// multiplication of left diagonal matrices
+Vec<ZZ_p> hermite_pade::mul_bottom_mosaic_diagonal(const Vec<ZZ_p> &v, long rows){
+	if (added == 0){
+		Vec<ZZ_p> empty;		
+		return empty;
+	}
+  Vec<ZZ_p> diag_ZZ_p1, diag_ZZ_p2;
+  Vec<Vec<ZZ_p>> partial_results;
+  conv(diag_ZZ_p1, diagonals1);
+  conv(diag_ZZ_p2, diagonals2);
+  long acc = 0;
+  for (long i = 0; i < type.length(); i++){
+  	Vec<ZZ_p> x1, x2;
+  	x1.SetLength(rows, ZZ_p(0));
+  	x2.SetLength(rows, ZZ_p(0));
+  	for (long j = 0; j < std::min(rows,type[i]+1); j++)
+  	  x1[j] = v[acc+j] * diag_ZZ_p1[i];
+  	for (long j = 0; j < std::min(type[i],rows-1); j++)
+  	  x2[j+1] = v[acc+j] * diag_ZZ_p2[i];
+  	acc += type[i] + 1;
+  	Vec<ZZ_p> x;
+  	for (long j = 0; j < rows; j++)
+  	  x.append(x1[j] + x2[j]);
+  	partial_results.append(x);
+  }
+  Vec<ZZ_p> result;
+  for (long i = 0; i < rows; i++){
+  	ZZ_p sum;
+  	for(long j = 0; j < type.length(); j++){
+  		sum += partial_results[j][i];
+  	}
+  	result.append(sum);
+  }
+  return result;
+}
+
 hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, long fft_index){
+  std::srand(std::time(0));
   zz_p::FFTInit(fft_index);
   p = zz_p::modulus();
   ZZ_p::init(ZZ(p));
@@ -57,7 +122,15 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   this->type = type;
   zz_pX f_field;
   conv(f_field, f);
-  this->prec = prec_inp;
+  this->prec = prec;
+  
+  long type_sum = 0;
+  for (long i = 0; i < type.length(); i++){
+    cout << "type: " << type[i] << endl;
+    type_sum += 1+type[i];
+  }
+  
+  Mat<zz_p> mat;
     
   // setting up the mosaic Hankel matrix
   Vec<hankel> vec_H;
@@ -72,25 +145,45 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
     for (int j = 0; j < type[i]; j++)
         inp_vec.append(zz_p{0});
     vec_H.append(hankel(inp_vec,prec,type[i]+1));
+    to_dense(mat,hankel(inp_vec,prec,type[i]+1));
     running = running * f_field;
   }
   Vec<Vec<hankel>> hankel_matrices;
   hankel_matrices.append(vec_H);
   mosaic_hankel MH(hankel_matrices);
-
-  // setting up the Cauchy matrix
+  
   cauchy_like_geometric_special CL; // the cauchy matrix
   zz_pX_Multipoint_Geometric X_int, Y_int; // preconditioners
+  
+  // find the rank of the original matrix
   Vec<zz_p> e_zz_p, f_zz_p; // the diagonal matrices
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert(invA,CL); // inverting M mod p
+  cout << "original rank: " << rank << endl;
+
+  cout << "type_sum: " << type_sum << endl;
+  added = 0;
+  if (rank < type_sum-1){
+  	long diff = this->prec - rank;
+  	added = diff;
+  	hankel_matrices.append(create_random_hankel_on_type(diff, type));
+  	MH = mosaic_hankel(hankel_matrices);
+  	cout << "diags: " << diagonals1 << endl;
+  	cout << "diags: " << diagonals2 << endl;
+  }
+
+  // setting up the Cauchy matrix
+  to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
+  rank = invert(invA,CL); // inverting M mod p
+  cout << "new rank: " << rank << endl;
   sizeX = X_int.length();
   sizeY = Y_int.length();
+  cout << "sizeY: " << sizeY << endl;
 
   // initializing the bivariate modular comp
   ZZ_pX f_ZZ_pX;
   conv(f_ZZ_pX, f);
-  BivariateModularComp M(f_ZZ_pX, type, prec); // could pass in the precomputed stuff
+  BivariateModularComp M(f_ZZ_pX, type, rank); // could pass in the precomputed stuff
 
   // initializing the pointer variables and vectors
   vec_M.append(M);
@@ -127,15 +220,11 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   this->X_int = &vec_X_int[0];
   this->Y_int = &vec_Y_int[0];
   this->CL = CL;
-  cout << "RANK: " << rank << endl;
-  Mat<zz_p>mat;
-  to_dense(mat,MH);
-  cout << "MH" << endl;
+  
+  //Mat<zz_p> mat;
+  to_dense(mat, MH);
   cout << mat << endl;
-  to_dense(mat,CL);
-  cout << "CL:" << endl;
-  cout << mat << endl;
-  //dostuff();
+  //cout << "RANK: " << rank << endl;
 }
 
 void hermite_pade::switch_context(long n){
@@ -154,7 +243,7 @@ void hermite_pade::switch_context(long n){
     // creating the new bivariate modular comp
     ZZ_pX f_p;
     conv(f_p, f_full_prec);
-    BivariateModularComp m_new(f_p, type, prec);
+    BivariateModularComp m_new(f_p, type, rank);
     // computing w mod p^2^n
     ZZ new_w;
     lift_root_of_unity(new_w, this->w, order, p, pow2);
@@ -218,7 +307,11 @@ Vec<ZZ> hermite_pade::mulA_right(Vec<ZZ_p> b){
   conv(temp, x);
   Y_int->evaluate(x,temp);
   mul_diagonal_right(x,D_d,x);
-  x = M->mult(flip_on_type(x));
+  Vec<ZZ_p> flipped = flip_on_type(x);
+  x = M->mult(flipped);
+  Vec<ZZ_p> res = mul_bottom_mosaic_diagonal(flipped,added);
+  for (long i = 0; i < res.length(); i++)
+    x.append(res[i]);
   conv(temp, x);
   X_int->evaluate(x,temp);
   mul_diagonal_right(x,e,x);
@@ -285,7 +378,7 @@ void hermite_pade::DAC(Vec<ZZ_p> &x, const Vec<ZZ_p>& b_in, long n){
 }
 
 bool hermite_pade::can_reconstruct(const Vec<ZZ_p> &v, long n){
-  if (n != 0) return false;
+  if (n <= 2) return false;
   for (long i = 0; i < v.length(); i++){
     ZZ a,b;
     try{
@@ -293,6 +386,25 @@ bool hermite_pade::can_reconstruct(const Vec<ZZ_p> &v, long n){
         if (result == 0) return false;
     }catch(...){return false;}
   }
+  /*
+  Vec<ZZ> v2;
+  conv(v2, v);
+  long prime = RandomPrime_long(16);
+  ZZ_p::init(ZZ(prime));
+  Vec<ZZ_p> v3;
+  conv(v3,v2);
+  ZZ_pX f_p;
+  conv(f_p, f_full_prec);
+  BivariateModularComp M(f_p, type, rank);
+  Vec<ZZ_p> check = M.mult(flip_on_type(v3));
+  cout << "diff prime" << check << endl;
+  for (long i = 0; i < check.length(); i++)
+    if (check[i] != ZZ_p(0)){
+      switch_context(n);
+      return false;
+    }
+  switch_context(n);
+  */
   return true;
 }
 
@@ -316,6 +428,8 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   long n = 0; // start at p^2^n
   Vec<ZZ_p> x,x_1,soln;
   DAC(x,b,n); // solution mod p
+  Mat<zz_p> mat;
+  to_dense(mat,CL);
   
   // padding x
   long x_length = x.length();
@@ -323,6 +437,8 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   x[rank] = -1;
   soln = conv<Vec<ZZ_p>>(find_original_sol(x));
   x.SetLength(x_length);
+  cout << "soln: " << soln << endl;
+  cout << "init check: " << M->mult(flip_on_type(soln)) << endl;
   
   Vec<ZZ> soln_ZZ,x_ZZ;
   conv(soln_ZZ,soln);
@@ -338,13 +454,14 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   	b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
   	Vec<ZZ_p> x,x_1,soln;
   	conv(x,x_ZZ);
-  	x.SetLength(sizeX);
+  	x.SetLength(x_length);
     Vec<ZZ_p> r; // the error
     r = conv<Vec<ZZ_p>>(mulA_right(x));
     r = r - b;
     Vec<ZZ> r_ZZ;
     conv(r_ZZ,r);
   	for (long i = 0; i < r.length(); i++){
+  		cout << "check R: " << r_ZZ[i] % p_powers[0] << endl;
    		r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
    	}	
     conv(r,r_ZZ);
@@ -352,20 +469,46 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
     switch_context(n);
     ZZ_p p_pow;
     conv(p_pow, p_powers[n-1]);
-    cout << "X: " << x << endl;
-    cout << "X1: " << x_1 << endl;
     x = x - p_pow * x_1;
     
     // padding x
     x.SetLength(sizeY,ZZ_p(0));
   	x[rank] = -1;
+  	//cout << "MUL A: " << mulA_right(x) << endl;
   	soln = conv<Vec<ZZ_p>>(find_original_sol(x));
+  	ZZ_p first;
+    for (long i = 0; i < soln.length(); i++)
+      if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
+        first = soln[i];
+        cout << "i: " << i << endl;
+        break;
+      }
+   // cout << "first: " << first   << endl;
+    for (long i = 0; i < soln.length(); i++){
+      soln[i] = soln[i] / first;
+    }
+    cout << "check: " << M->mult(flip_on_type(soln)) << endl;
   	x.SetLength(x_length);
     conv(soln_ZZ, soln);
     conv(x_ZZ,x);
   }
   reconstruct(sol,conv<Vec<ZZ_p>>(soln_ZZ),n);
   sol = flip_on_type(sol);
+  for (long times = 0; times < 10; times++){
+  long prime = RandomPrime_long(32);
+  ZZ_p::init(ZZ(prime));
+  Vec<ZZ_p> soln2;
+  for (long i = 0; i < sol.length(); i++){
+    ZZ_p a = conv<ZZ_p>(sol[i][0]);
+    ZZ_p b = conv<ZZ_p>(sol[i][1]);
+    soln2.append(a/b);
+  }
+  ZZ_pX f_p;
+  conv(f_p, f_full_prec);
+  BivariateModularComp m_new(f_p, type, rank);
+  cout << "Double check with p = " << ZZ_p::modulus() << ": " << m_new.mult(soln2) << endl;
+  cout << "soln2: " << soln2 << endl;
+  }
 }
 
 
