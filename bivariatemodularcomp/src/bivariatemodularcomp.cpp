@@ -97,12 +97,23 @@ void BivariateModularComp::create_rhs_matrix(Mat<ZZ_pX> &B,const Vec<ZZ_pX> &v){
 }
 
 void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
+
+  cout << "enter deslice\n";
+  cout << "type " << type << endl;
+  cout << C << endl;
+
   D.SetLength(C.NumRows());
+
+  long s = 0;
+  for (long i = 0; i < type.length(); i++)
+    s += max(s, type[i]);
 
   for (long i = 0; i < C.NumRows(); i++){
     
     ZZ_pX v;
-    v.rep.SetLength(prec + type[type.length()-1] + 1);
+    v.rep.SetLength(prec + s + 1);
+    
+    cout << "len = " << v.rep.length() << "\n";
 
     ZZ_p* cv = v.rep.elts();
     const ZZ_pX * Ci = C[i].elts();
@@ -111,6 +122,10 @@ void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
     for (long j = 0; j < old_len; j++)
       cv[j] = cC[j];
     cv += type[0]+1;
+
+    cout << "old " << old_len << " cv " << (cv-v.rep.elts()) << endl;
+
+
     for (long a = 1; a < C.NumCols(); a++){
       const ZZ_p * cC = Ci[a].rep.elts();
       long new_len = Ci[a].rep.length();
@@ -165,42 +180,25 @@ Vec<ZZ_p> BivariateModularComp::mult(const Vec<ZZ_p> &rhs){
   Mat<ZZ_pX> A0, A;
   Vec<ZZ_pX> rhs_poly;
 
-  double t;
-  t = GetTime();
   create_lhs_list(rhs_poly, rhs);
-  cout << "(" << GetTime()-t << ", ";
-
-  t = GetTime();
   create_lhs_matrix(A0, rhs_poly);
-  cout << GetTime()-t << ", ";
-
-  t = GetTime();
   mul_CRT_CTFT(A, A0, B);
-  cout << GetTime()-t << ", ";
+  Vec<ZZ_pX> B1; // TODO: change this name!
 
-  Vec<ZZ_pX> B; // TODO: change this name!
-  t = GetTime();
-  deslice(B, A);
-  cout << GetTime()-t << ", ";
+  deslice(B1, A);
 
   ZZ_pX p;
-  t = GetTime();
-  p = B[B.length() - 1];
+  p = B1[B1.length() - 1];
   ZZ_pX_poly_multiplier multF(F_field, prec);
-  for (long i = B.length()-2; i >= 0; i--){
+  for (long i = B1.length()-2; i >= 0; i--){
     multF.mul(p, p);
-    p = trunc(p, prec) + B[i];
+    p = trunc(p, prec) + B1[i];
   }
-  // for (long i = B.length()-2; i >= 0; i--)
-  //   p = trunc(p*F_field, prec) + B[i];
-  cout << GetTime()-t << ", ";
 
   Vec<ZZ_p> v;
   v.SetLength(prec);
-  t = GetTime();
   for (long i = 0; i < prec; i++)
     v[i] = coeff(p, i);
-  cout << GetTime()-t << ") ";
 
   return v;
 }

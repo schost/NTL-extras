@@ -179,13 +179,11 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   sizeX = X_int.length();
   sizeY = Y_int.length();
   cout << "sizeY: " << sizeY << endl;
-  cout << "p:=" << zz_p::modulus() << ";\n";
 
   // initializing the bivariate modular comp
   ZZ_pX f_ZZ_pX;
   conv(f_ZZ_pX, f);
   BivariateModularComp M(f_ZZ_pX, type, rank); // could pass in the precomputed stuff
-  cout << "new p " << zz_p::modulus() << endl;
   // initializing the pointer variables and vectors
   vec_M.append(M);
 
@@ -201,12 +199,9 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   conv(this->c,c);
   conv(this->d,d);
 
-  cout << "c:=" << c << ";\n";
-
   // initializing the X_int and Y_int stuff
   zz_p w_zz_p, w2;
   X_int.point(w_zz_p,1);
-  cout << "wc:=GF(p)!" << w_zz_p << ";\n";
   Y_int.point(w2,1);
   w_zz_p = w_zz_p / c;
   ZZ w;
@@ -215,13 +210,8 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   conv(w_p,w);
   conv(this->w,w);
 
-  cout << "now here2\n";
-  cout << "p:=" << zz_p::modulus() << ";\n";
-  cout << "w:=" << w_zz_p << ";\n";
-
   // find the order of w
   order = find_order(w_zz_p);
-  cout << "now here3\n";
   ZZ_pX_Multipoint_FFT X_int_ZZ_p(w_p,conv<ZZ_p>(this->c), sizeX);
   ZZ_pX_Multipoint_FFT Y_int_ZZ_p(w_p,conv<ZZ_p>(this->d), sizeY);
 
@@ -310,6 +300,7 @@ void hermite_pade::dostuff(){
 Vec<ZZ> hermite_pade::mulA_right(Vec<ZZ_p> b){
   // Y_int = D_d * Y_int * D_d^(-1)
   // D_e X_int M Y_int^t D_f
+
   b.SetLength(sizeY, ZZ_p(0)); // padding it
   Vec<ZZ_p> x,e(this->e),f(this->f);
   ZZ_pX temp;
@@ -433,17 +424,19 @@ void hermite_pade::reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n){
 }
 
 void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
+
   Vec<ZZ_p> b; // rhs of the equation Ax = b
   Vec<ZZ_p> extractor; // mult with A to get a column
   extractor.SetLength(sizeY, ZZ_p(0));
   extractor[rank] = 1; // just for now, take the last column
   b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
+  cout << "hi2!\n";  
   long n = 0; // start at p^2^n
   Vec<ZZ_p> x,x_1,soln;
   DAC(x,b,n); // solution mod p
   Mat<zz_p> mat;
   to_dense(mat,CL);
-  
+
   // padding x
   long x_length = x.length();
   x.SetLength(sizeY,ZZ_p(0));
