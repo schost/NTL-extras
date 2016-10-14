@@ -129,6 +129,8 @@ long size(const ZZ_pX& a){
 /* assumes that deg(B) < n                                    */
 /*------------------------------------------------------------*/
 void ZZ_pX_poly_multiplier::mul(ZZ_pX& C, const ZZ_pX& B){
+  zz_pPush push; 
+
   const ZZ_pFFTInfoT *FFTInfo = ZZ_p::GetFFTInfo();
   ZZ_pTmpSpaceT *TmpSpace = ZZ_p::GetTmpSpace();
   long nB = deg(B);
@@ -175,6 +177,8 @@ void ZZ_pX_poly_multiplier::mul(ZZ_pX& C, const ZZ_pX& B){
 /* constructor, given an upper bound on the degree of args    */
 /*------------------------------------------------------------*/
 ZZ_pX_poly_multiplier::ZZ_pX_poly_multiplier(const ZZ_pX& A, long nB){
+
+  zz_pPush push; 
 
   const ZZ_pFFTInfoT *FFTInfo = ZZ_p::GetFFTInfo();
   ZZ_pTmpSpaceT *TmpSpace = ZZ_p::GetTmpSpace();

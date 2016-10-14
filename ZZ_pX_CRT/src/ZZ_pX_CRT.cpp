@@ -233,6 +233,7 @@ long find_root_of_unity(long p, long s){
   }
 
   zww = power(to_zz_p(w), 1L << (order-log));
+
   return rep(zww);
 }
 

@@ -179,12 +179,13 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   sizeX = X_int.length();
   sizeY = Y_int.length();
   cout << "sizeY: " << sizeY << endl;
+  cout << "p:=" << zz_p::modulus() << ";\n";
 
   // initializing the bivariate modular comp
   ZZ_pX f_ZZ_pX;
   conv(f_ZZ_pX, f);
   BivariateModularComp M(f_ZZ_pX, type, rank); // could pass in the precomputed stuff
-
+  cout << "new p " << zz_p::modulus() << endl;
   // initializing the pointer variables and vectors
   vec_M.append(M);
 
@@ -200,9 +201,12 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   conv(this->c,c);
   conv(this->d,d);
 
+  cout << "c:=" << c << ";\n";
+
   // initializing the X_int and Y_int stuff
   zz_p w_zz_p, w2;
   X_int.point(w_zz_p,1);
+  cout << "wc:=GF(p)!" << w_zz_p << ";\n";
   Y_int.point(w2,1);
   w_zz_p = w_zz_p / c;
   ZZ w;
@@ -210,21 +214,30 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   conv(w,w_zz_p);
   conv(w_p,w);
   conv(this->w,w);
+
+  cout << "now here2\n";
+  cout << "p:=" << zz_p::modulus() << ";\n";
+  cout << "w:=" << w_zz_p << ";\n";
+
   // find the order of w
   order = find_order(w_zz_p);
+  cout << "now here3\n";
   ZZ_pX_Multipoint_FFT X_int_ZZ_p(w_p,conv<ZZ_p>(this->c), sizeX);
   ZZ_pX_Multipoint_FFT Y_int_ZZ_p(w_p,conv<ZZ_p>(this->d), sizeY);
+
+
   this->vec_X_int.append(X_int_ZZ_p);
   this->vec_Y_int.append(Y_int_ZZ_p);
   this->M = &vec_M[0];
   this->X_int = &vec_X_int[0];
   this->Y_int = &vec_Y_int[0];
   this->CL = CL;
-  
+
+ 
   //Mat<zz_p> mat;
   to_dense(mat, MH);
   cout << mat << endl;
-  //cout << "RANK: " << rank << endl;
+  cout << "RANK: " << rank << endl;
 }
 
 void hermite_pade::switch_context(long n){
