@@ -19,10 +19,6 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
   ZZ_pX running = ZZ_pX{1};
   Vec<ZZ_pX> fs;
 
-  double t;
-
-  cout << "old p? " << zz_p::modulus() << endl;
-
   fs.SetLength(sqrtP);
   ZZ_pX_poly_multiplier multF(f, prec);
   for (long i = 0; i < sqrtP; i++){
@@ -30,16 +26,6 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
     multF.mul(running, running);
     trunc(running, running, prec);
   }
-
-  cout << "new p? " << zz_p::modulus() << endl;
-
-  // t = GetTime();
-  // fs.SetLength(sqrtP);
-  // for (long i = 0; i < sqrtP; i++){
-  //   fs[i] = running;
-  //   running = MulTrunc(running, f, prec);
-  // }
-  // cout << "[" << GetTime() - t << " ";
 
   F_field = running;
   create_rhs_matrix(B, fs);
