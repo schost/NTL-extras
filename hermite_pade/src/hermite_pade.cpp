@@ -48,8 +48,8 @@ Vec<Vec<ZZ>> hermite_pade::flip_on_type (const Vec<Vec<ZZ>> &v){
 
 hankel hermite_pade::create_random_hankel (long rows, long cols){
   Vec<zz_p> running;
-  cout << "rows: " << rows << " cols: " << cols << endl;
-  cout << "R: " << rows+cols-1 << endl;
+//  cout << "rows: " << rows << " cols: " << cols << endl;
+//  cout << "R: " << rows+cols-1 << endl;
   running.SetLength(rows+cols-1, zz_p(0));
   long random1 = std::rand()%1000;
   long random2 = std::rand()%1000;
@@ -58,17 +58,17 @@ hankel hermite_pade::create_random_hankel (long rows, long cols){
     running[rows-2] = random2;
   diagonals1.append(random1);
   diagonals2.append(random2);
-  Mat<zz_p> m;
-  to_dense(m, hankel(running,rows,cols));
-  cout << running << endl;
-  cout << "Hankel: " << endl;
-  cout << m << endl;
+  //Mat<zz_p> m;
+  //to_dense(m, hankel(running,rows,cols));
+  //cout << running << endl;
+  //cout << "Hankel: " << endl;
+  //cout << m << endl;
   return hankel(running, rows, cols);
 }
 
 Vec<hankel> hermite_pade::create_random_hankel_on_type(long rows, const Vec<long> &type){
   Vec<hankel> mh;
-  cout << "needed rows: " << rows << endl;
+//  cout << "needed rows: " << rows << endl;
   for (long i = 0; i < type.length(); i++)
     mh.append(create_random_hankel(rows,type[i]+1));
   return mh;
@@ -91,7 +91,7 @@ Vec<ZZ_p> hermite_pade::mul_bottom_mosaic_diagonal(const Vec<ZZ_p> &v, long rows
   	x2.SetLength(rows, ZZ_p(0));
   	for (long j = 0; j < std::min(rows,type[i]+1); j++)
   	  x1[j] = v[acc+j] * diag_ZZ_p1[i];
-  	for (long j = 0; j < std::min(type[i],rows-1); j++)
+  	for (long j = 0; j < std::min(type[i]+1,rows-1); j++)
   	  x2[j+1] = v[acc+j] * diag_ZZ_p2[i];
   	acc += type[i] + 1;
   	Vec<ZZ_p> x;
@@ -116,7 +116,7 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   p = zz_p::modulus();
   ZZ_p::init(ZZ(p));
   p_powers.append(ZZ(p));
-  cout << "p: " << p << endl;
+  //cout << "p: " << p << endl;
   long prec = deg(f) + 1;
   f_full_prec = f;
   this->type = type;
@@ -126,7 +126,7 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   
   long type_sum = 0;
   for (long i = 0; i < type.length(); i++){
-    cout << "type: " << type[i] << endl;
+    //cout << "type: " << type[i] << endl;
     type_sum += 1+type[i];
   }
   
@@ -159,26 +159,26 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   Vec<zz_p> e_zz_p, f_zz_p; // the diagonal matrices
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert(invA,CL); // inverting M mod p
-  cout << "original rank: " << rank << endl;
+  //cout << "original rank: " << rank << endl;
 
-  cout << "type_sum: " << type_sum << endl;
+  //cout << "type_sum: " << type_sum << endl;
   added = 0;
   if (rank < type_sum-1){
   	long diff = this->prec - rank;
   	added = diff;
   	hankel_matrices.append(create_random_hankel_on_type(diff, type));
   	MH = mosaic_hankel(hankel_matrices);
-  	cout << "diags: " << diagonals1 << endl;
-  	cout << "diags: " << diagonals2 << endl;
+  	//cout << "diags: " << diagonals1 << endl;
+  	//cout << "diags: " << diagonals2 << endl;
   }
 
   // setting up the Cauchy matrix
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert(invA,CL); // inverting M mod p
-  cout << "new rank: " << rank << endl;
+  //cout << "new rank: " << rank << endl;
   sizeX = X_int.length();
   sizeY = Y_int.length();
-  cout << "sizeY: " << sizeY << endl;
+  //cout << "sizeY: " << sizeY << endl;
 
   // initializing the bivariate modular comp
   ZZ_pX f_ZZ_pX;
@@ -222,8 +222,8 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   this->CL = CL;
   
   //Mat<zz_p> mat;
-  to_dense(mat, MH);
-  cout << mat << endl;
+  //to_dense(mat, MH);
+  //cout << mat << endl;
   //cout << "RANK: " << rank << endl;
 }
 
@@ -437,77 +437,75 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   x[rank] = -1;
   soln = conv<Vec<ZZ_p>>(find_original_sol(x));
   x.SetLength(x_length);
-  cout << "soln: " << soln << endl;
-  cout << "init check: " << M->mult(flip_on_type(soln)) << endl;
   
   Vec<ZZ> soln_ZZ,x_ZZ;
   conv(soln_ZZ,soln);
   conv(x_ZZ, x);
   
-  // loop until we get enough prec
-  while(!can_reconstruct(conv<Vec<ZZ_p>>(soln_ZZ),n)){
-    switch_context(++n);
-  	Vec<ZZ_p> b; // rhs of the equation Ax = b
-  	Vec<ZZ_p> extractor; // mult with A to get a column
-  	extractor.SetLength(sizeY, ZZ_p(0));
-  	extractor[rank] = 1; // just for now, take the last column
-  	b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
-  	Vec<ZZ_p> x,x_1,soln;
-  	conv(x,x_ZZ);
-  	x.SetLength(x_length);
-    Vec<ZZ_p> r; // the error
-    r = conv<Vec<ZZ_p>>(mulA_right(x));
-    r = r - b;
-    Vec<ZZ> r_ZZ;
-    conv(r_ZZ,r);
-  	for (long i = 0; i < r.length(); i++){
-  		cout << "check R: " << r_ZZ[i] % p_powers[0] << endl;
-   		r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
-   	}	
-    conv(r,r_ZZ);
-    DAC(x_1,r,n-1);
-    switch_context(n);
-    ZZ_p p_pow;
-    conv(p_pow, p_powers[n-1]);
-    x = x - p_pow * x_1;
+  bool solved = false;
+  
+  while(!solved){
+  	// loop until we get enough prec
+  	while(!can_reconstruct(conv<Vec<ZZ_p>>(soln_ZZ),n)){
+   	  switch_context(++n);
+  		Vec<ZZ_p> b; // rhs of the equation Ax = b
+  		Vec<ZZ_p> extractor; // mult with A to get a column
+  		extractor.SetLength(sizeY, ZZ_p(0));
+  		extractor[rank] = 1; // just for now, take the last column
+  		b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
+  		Vec<ZZ_p> x,x_1,soln;
+  		conv(x,x_ZZ);
+  		x.SetLength(x_length);
+    	Vec<ZZ_p> r; // the error
+    	r = conv<Vec<ZZ_p>>(mulA_right(x));
+    	r = r - b;
+    	Vec<ZZ> r_ZZ;
+    	conv(r_ZZ,r);
+  		for (long i = 0; i < r.length(); i++){
+   			r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
+   		}	
+    	conv(r,r_ZZ);
+    	DAC(x_1,r,n-1);
+    	switch_context(n);
+    	ZZ_p p_pow;
+    	conv(p_pow, p_powers[n-1]);
+    	x = x - p_pow * x_1;
     
-    // padding x
-    x.SetLength(sizeY,ZZ_p(0));
-  	x[rank] = -1;
-  	//cout << "MUL A: " << mulA_right(x) << endl;
-  	soln = conv<Vec<ZZ_p>>(find_original_sol(x));
-  	ZZ_p first;
-    for (long i = 0; i < soln.length(); i++)
-      if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
-        first = soln[i];
-        cout << "i: " << i << endl;
-        break;
-      }
-   // cout << "first: " << first   << endl;
-    for (long i = 0; i < soln.length(); i++){
-      soln[i] = soln[i] / first;
-    }
-    cout << "check: " << M->mult(flip_on_type(soln)) << endl;
-  	x.SetLength(x_length);
-    conv(soln_ZZ, soln);
-    conv(x_ZZ,x);
-  }
-  reconstruct(sol,conv<Vec<ZZ_p>>(soln_ZZ),n);
-  sol = flip_on_type(sol);
-  for (long times = 0; times < 10; times++){
-  long prime = RandomPrime_long(32);
-  ZZ_p::init(ZZ(prime));
-  Vec<ZZ_p> soln2;
-  for (long i = 0; i < sol.length(); i++){
-    ZZ_p a = conv<ZZ_p>(sol[i][0]);
-    ZZ_p b = conv<ZZ_p>(sol[i][1]);
-    soln2.append(a/b);
-  }
-  ZZ_pX f_p;
-  conv(f_p, f_full_prec);
-  BivariateModularComp m_new(f_p, type, rank);
-  cout << "Double check with p = " << ZZ_p::modulus() << ": " << m_new.mult(soln2) << endl;
-  cout << "soln2: " << soln2 << endl;
+    	// padding x
+    	x.SetLength(sizeY,ZZ_p(0));
+  		x[rank] = -1;
+  		soln = conv<Vec<ZZ_p>>(find_original_sol(x));
+  		ZZ_p first;
+    	for (long i = 0; i < soln.length(); i++)
+				if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
+   	    first = soln[i];
+   	    break;
+   	  }
+   	  for (long i = 0; i < soln.length(); i++){
+     	  soln[i] = soln[i] / first;
+   	  }
+  		x.SetLength(x_length);
+   	  conv(soln_ZZ, soln);
+   	  conv(x_ZZ,x);
+  	}
+  	reconstruct(sol,conv<Vec<ZZ_p>>(soln_ZZ),n);
+  	sol = flip_on_type(sol);
+  	long prime = RandomPrime_long(32);
+  	ZZ_p::init(ZZ(prime));
+  	Vec<ZZ_p> soln2;
+  	for (long i = 0; i < sol.length(); i++){
+   	 ZZ_p a = conv<ZZ_p>(sol[i][0]);
+   	 ZZ_p b = conv<ZZ_p>(sol[i][1]);
+  	 soln2.append(a/b);
+ 	 	}
+  	ZZ_pX f_p;
+	  conv(f_p, f_full_prec);
+  	BivariateModularComp m_new(f_p, type, rank);
+ 	  bool all_zero = true;
+ 	  Vec<ZZ_p> solution = m_new.mult(soln2);
+ 	  for (long i = 0; i < solution.length(); i++)
+ 	  	if (solution[i] != ZZ_p(0)) all_zero = false;
+ 	  solved = all_zero;
   }
 }
 
