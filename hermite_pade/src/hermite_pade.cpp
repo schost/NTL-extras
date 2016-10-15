@@ -222,18 +222,6 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   this->X_int = &vec_X_int[0];
   this->Y_int = &vec_Y_int[0];
   this->CL = CL;
-
- 
-  //Mat<zz_p> mat;
-<<<<<<< HEAD
-  //to_dense(mat, MH);
-  //cout << mat << endl;
-  //cout << "RANK: " << rank << endl;
-=======
-  to_dense(mat, MH);
-  cout << mat << endl;
-  cout << "RANK: " << rank << endl;
->>>>>>> e29664fce6ca58d3547291bbca4ccdf3ba08d93c
 }
 
 void hermite_pade::switch_context(long n){
@@ -435,8 +423,7 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   Vec<ZZ_p> extractor; // mult with A to get a column
   extractor.SetLength(sizeY, ZZ_p(0));
   extractor[rank] = 1; // just for now, take the last column
-  b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
-  cout << "hi2!\n";  
+  b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A  
   long n = 0; // start at p^2^n
   Vec<ZZ_p> x,x_1,soln;
   DAC(x,b,n); // solution mod p
@@ -455,8 +442,8 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   conv(x_ZZ, x);
   
   bool solved = false;
-  
-  while(!solved){
+  // loops again if we can do rational reconstruction BUT isn't a solution mod another prime
+  while(!solved){  
   	// loop until we get enough prec
   	while(!can_reconstruct(conv<Vec<ZZ_p>>(soln_ZZ),n)){
    	  switch_context(++n);
