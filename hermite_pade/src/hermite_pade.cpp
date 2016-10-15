@@ -184,7 +184,6 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   ZZ_pX f_ZZ_pX;
   conv(f_ZZ_pX, f);
   BivariateModularComp M(f_ZZ_pX, type, rank); // could pass in the precomputed stuff
-
   // initializing the pointer variables and vectors
   vec_M.append(M);
 
@@ -210,21 +209,31 @@ hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, l
   conv(w,w_zz_p);
   conv(w_p,w);
   conv(this->w,w);
+
   // find the order of w
   order = find_order(w_zz_p);
   ZZ_pX_Multipoint_FFT X_int_ZZ_p(w_p,conv<ZZ_p>(this->c), sizeX);
   ZZ_pX_Multipoint_FFT Y_int_ZZ_p(w_p,conv<ZZ_p>(this->d), sizeY);
+
+
   this->vec_X_int.append(X_int_ZZ_p);
   this->vec_Y_int.append(Y_int_ZZ_p);
   this->M = &vec_M[0];
   this->X_int = &vec_X_int[0];
   this->Y_int = &vec_Y_int[0];
   this->CL = CL;
-  
+
+ 
   //Mat<zz_p> mat;
+<<<<<<< HEAD
   //to_dense(mat, MH);
   //cout << mat << endl;
   //cout << "RANK: " << rank << endl;
+=======
+  to_dense(mat, MH);
+  cout << mat << endl;
+  cout << "RANK: " << rank << endl;
+>>>>>>> e29664fce6ca58d3547291bbca4ccdf3ba08d93c
 }
 
 void hermite_pade::switch_context(long n){
@@ -297,6 +306,7 @@ void hermite_pade::dostuff(){
 Vec<ZZ> hermite_pade::mulA_right(Vec<ZZ_p> b){
   // Y_int = D_d * Y_int * D_d^(-1)
   // D_e X_int M Y_int^t D_f
+
   b.SetLength(sizeY, ZZ_p(0)); // padding it
   Vec<ZZ_p> x,e(this->e),f(this->f);
   ZZ_pX temp;
@@ -420,17 +430,19 @@ void hermite_pade::reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n){
 }
 
 void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
+
   Vec<ZZ_p> b; // rhs of the equation Ax = b
   Vec<ZZ_p> extractor; // mult with A to get a column
   extractor.SetLength(sizeY, ZZ_p(0));
   extractor[rank] = 1; // just for now, take the last column
   b = conv<Vec<ZZ_p>>(mulA_right(extractor)); // b is the last column of A
+  cout << "hi2!\n";  
   long n = 0; // start at p^2^n
   Vec<ZZ_p> x,x_1,soln;
   DAC(x,b,n); // solution mod p
   Mat<zz_p> mat;
   to_dense(mat,CL);
-  
+
   // padding x
   long x_length = x.length();
   x.SetLength(sizeY,ZZ_p(0));

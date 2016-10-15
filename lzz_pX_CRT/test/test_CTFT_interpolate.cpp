@@ -13,15 +13,17 @@ void check(int opt){
 
   zz_p::FFTInit(0);
 
-  for (long i = 1; i < 1000; i+=1){
-    Vec<zz_p> val;
-    zz_pX f = random_zz_pX(i);
-    zz_pX_Multipoint_CTFT c(i);
-    c.evaluate(val, f);
-
-    zz_pX g;
-    c.interpolate(g, val);
-    cout << i << " " << f-g << endl;
+  while(1){
+    for (long i = 1; i < 1000; i+=1){
+      Vec<zz_p> val;
+      zz_pX f = random_zz_pX(i);
+      zz_pX_Multipoint_CTFT c(i);
+      c.evaluate(val, f);
+      
+      zz_pX g;
+      c.interpolate(g, val);
+      cout << i << " " << f-g << endl;
+    }
   }
 }
 

@@ -1,46 +1,11 @@
 
+DIRS = sage_output magma_output ZZ_extra lzz_p_extra vec_lzz_p_extra lzz_pX_middle_product lzz_pX_CRT ZZ_pX_extra ZZ_CRT ZZ_pX_CRT mat_lzz_pX_extra mat_ZZ_pX_extra bivariate cauchy_like_geometric_special mosaic_hankel bivariatemodularcomp hermite_pade
 
 all:	clean
-	cd sage_output/src ; make
-	cd magma_output/src ; make
-	cd vec_lzz_p_extra/src ; make
-	cd lzz_p_extra/src ; make
-	cd lzz_pX_middle_product/src ; make
-	cd lzz_pX_CRT/src ; make
-	cd ZZ_CRT/src ; make
-	cd ZZ_pX_CRT/src ; make
-	cd mat_lzz_pX_extra/src ; make
-	cd bivariate/src ; make
-	cd cauchy_like_geometric_special/src ; make
-	cd mosaic_hankel/src ; make
-	cd bivariatemodularcomp/src ; make
-	cd hermite_pade/src; make
+	$(foreach dir, $(DIRS), cd $(dir)/src ; make ; cd ../.. ;)
 
 clean:
 	rm -f lib/*
 	rm -f include/*
-	cd sage_output/src ; make clean
-	cd magma_output/src ; make clean
-	cd vec_lzz_p_extra/src ; make clean
-	cd lzz_p_extra/src ; make clean
-	cd lzz_pX_middle_product/src ; make clean
-	cd lzz_pX_CRT/src ; make clean
-	cd ZZ_CRT/src ; make clean
-	cd ZZ_pX_CRT/src ; make clean
-	cd mat_lzz_pX_extra/src ; make clean
-	cd bivariate/src ; make clean
-	cd cauchy_like_geometric_special/src ; make clean
-	cd mosaic_hankel/src ; make clean
-	cd sage_output/test ; make clean
-	cd magma_output/test ; make clean
-	cd vec_lzz_p_extra/test ; make clean
-	cd lzz_p_extra/test ; make clean
-	cd lzz_pX_middle_product/test ; make clean
-	cd lzz_pX_CRT/test ; make clean
-	cd ZZ_CRT/test ; make clean
-	cd ZZ_pX_CRT/test ; make clean
-	cd mat_lzz_pX_extra/test ; make clean
-	cd bivariate/test ; make clean
-	cd cauchy_like_geometric_special/test ; make clean
-	cd mosaic_hankel/test ; make clean
-	cd hermite_pade/src; make clean
+	$(foreach dir, $(DIRS), cd $(dir)/src ; make clean ; cd ../.. ;)
+	$(foreach dir, $(DIRS), cd $(dir)/test ; make clean ; cd ../.. ;)

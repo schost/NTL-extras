@@ -39,7 +39,7 @@ NTL_CLIENT
 /*------------------------------------------------------------*/
 void free_vec_gbigint(Vec<_ntl_gbigint>& v){
   for (long i = 0; i < v.length(); i++)
-    _ntl_gfree(&v[i]);
+    _ntl_gfree(v[i]);
 }
 
 /*------------------------------------------------------------*/
@@ -349,7 +349,7 @@ void gmod_simple(_ntl_gbigint a, _ntl_gbigint d, _ntl_gbigint *rr) {
    STRIP(sr, rdata);
    SIZE(r) = sr;
 
-   _ntl_gfree(&b);
+   _ntl_gfree(b);
 }
 
 

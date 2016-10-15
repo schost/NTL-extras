@@ -98,7 +98,6 @@ void magma_assign(const ZZX & v, const string & name){
   magma_assign(v, "XX", name);
 }
 
-
 /*------------------------------------------------------------*/
 /* prints a vector                                            */
 /*------------------------------------------------------------*/
@@ -117,6 +116,29 @@ void magma_output(const Vec<long> & v){
 /* assigns a vector to variable "name"                        */
 /*------------------------------------------------------------*/
 void magma_assign(const Vec<long> & v, const string & name){
+  cout << name << " := ";
+  magma_output(v);
+  cout << ";" << endl;
+}
+
+/*------------------------------------------------------------*/
+/* prints a vector                                            */
+/*------------------------------------------------------------*/
+void magma_output(const Vec<unsigned long> & v){
+  if (v.length() == 0){
+    cout << "[]";
+    return;
+  }
+  cout << "[";
+  for (long i = 0; i < v.length()-1; i++)
+    cout << v[i] << ", ";
+  cout << v[v.length()-1] << "]";
+}
+
+/*------------------------------------------------------------*/
+/* assigns a vector to variable "name"                        */
+/*------------------------------------------------------------*/
+void magma_assign(const Vec<unsigned long> & v, const string & name){
   cout << name << " := ";
   magma_output(v);
   cout << ";" << endl;

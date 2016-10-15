@@ -256,6 +256,10 @@ class zz_pX_Multipoint_CTFT : public zz_pX_Multipoint {
   /*-----------------------------------------------------------*/
   void CRT(long* x, long *tmp) const;
 
+  /*---------------------------------------------------------*/
+  /* evaluates A at n points                                 */
+  /*---------------------------------------------------------*/
+  void evaluate(Vec<zz_p>& val, const long * A, const long n0) const;
 
   zz_pX_Multipoint_CTFT(){}
   zz_pX_Multipoint_CTFT(long index_in){
