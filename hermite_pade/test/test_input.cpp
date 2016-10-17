@@ -24,5 +24,5 @@ int main(){
   hermite_pade hp(f,type,deg(f)+1,10);
   Vec<Vec<ZZ>> sol;
   hp.find_rand_sol(sol);
-  cout << sol << endl;
+  cout << "sol: " << sol << endl;
 }
