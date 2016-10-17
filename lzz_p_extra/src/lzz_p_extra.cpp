@@ -22,6 +22,18 @@ long order(const zz_p& a){
 }
 
 /*------------------------------------------------------------*/
+/* multiplicative order of w                                  */
+/* assumes it is a power of 2                                 */
+/*------------------------------------------------------------*/
+long order_dyadic(const zz_p& w){
+  if (w == zz_p(1))
+    return 1;
+  else
+    return 2 * order_dyadic(w * w);
+}
+
+
+/*------------------------------------------------------------*/
 /* finds an element of order at least ord                     */
 /* assumes it exists, does not verify                         */
 /*------------------------------------------------------------*/

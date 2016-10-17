@@ -98,10 +98,6 @@ void BivariateModularComp::create_rhs_matrix(Mat<ZZ_pX> &B,const Vec<ZZ_pX> &v){
 
 void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
 
-  cout << "enter deslice\n";
-  cout << "type " << type << endl;
-  cout << C << endl;
-
   D.SetLength(C.NumRows());
 
   long s = 0;
@@ -112,9 +108,6 @@ void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
     
     ZZ_pX v;
     v.rep.SetLength(prec + s + 1);
-    
-    cout << "len = " << v.rep.length() << "\n";
-
     ZZ_p* cv = v.rep.elts();
     const ZZ_pX * Ci = C[i].elts();
     const ZZ_p * cC = Ci[0].rep.elts();
@@ -122,10 +115,6 @@ void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
     for (long j = 0; j < old_len; j++)
       cv[j] = cC[j];
     cv += type[0]+1;
-
-    cout << "old " << old_len << " cv " << (cv-v.rep.elts()) << endl;
-
-
     for (long a = 1; a < C.NumCols(); a++){
       const ZZ_p * cC = Ci[a].rep.elts();
       long new_len = Ci[a].rep.length();

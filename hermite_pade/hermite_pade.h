@@ -12,14 +12,16 @@
 #include "cauchy_geometric_special.h"
 
 class hermite_pade{
+
+  long level;
+  zz_pContext ctx; // zz_p 
   Vec<BivariateModularComp> vec_M;
-  cauchy_like_geometric_special CL,invA; //the inverse mod p
-  Vec<ZZ_p> e, f; // for precondition the Cauchy Matrix
-  ZZ c, d; // constant for the preconditioners of M
   Vec<ZZ_pX_Multipoint_FFT> vec_X_int, vec_Y_int; // to store already calculated powers
   Vec<ZZ> p_powers; // already calculated values of p^2^n
-  BivariateModularComp *M; // the current M
-  ZZ_pX_Multipoint_FFT *X_int, *Y_int; // the current preconditioner
+  cauchy_like_geometric_special invA; //the inverse mod p
+  Vec<ZZ> e, f; // for precondition the Cauchy Matrix
+  ZZ c, d; // constant for the preconditioners of M
+
   ZZX f_full_prec; // the polynomial in full precision
   Vec<long> type; // the type of the approximant
   long rank; // the rank of M
@@ -27,45 +29,68 @@ class hermite_pade{
   long order; // order of w
   long p, prec, sizeX, sizeY;
   long added; // number of rows added
-  Vec<long> diagonals1;
-  Vec<long> diagonals2;
+  Vec<long> diagonals1, diagonals2;
 
   /**** helpers *****************************************/ 
   // switches the field to mod p^2^n
   void switch_context(long n);
   
-  // calculates the order of w
-  long find_order(zz_p w);
 
-  // checks if every entry can be reconstructed in the current field
-  bool can_reconstruct(const Vec<ZZ_p> &v, long n);
-
-  // computes (D_e X_int) M (D_f Y_int)^t * b
-  Vec<ZZ> mulA_right (Vec<ZZ_p> b);
-
-  // computes x = Diagonal_d * a where Diagonal_d is the diagonal matrix constructed from d
-  void mul_diagonal_right (Vec<ZZ_p> &x,const Vec<ZZ_p> &d, const Vec<ZZ_p> &a);
+  /*----------------------------------------------------------------*/
+  /* returns a block of bi-sub-diagonal hankel matrices             */
+  /* size is determined by the type                                 */
+  /*----------------------------------------------------------------*/
+  Vec<hankel> create_random_hankel_on_type();
   
-  // returns each block of v (based on the type) flipped
+  /*----------------------------------------------------------------*/
+  /* multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f       */
+  /* (CL is cauchy-geometric-like)                                  */
+  /* b need not have size CL.NumCols()                              */
+  /*----------------------------------------------------------------*/
+  Vec<ZZ_p> mulA_right (const Vec<ZZ_p> &b);
+
+  /*----------------------------------------------------------------*/
+  /* applies a block reversal to v                                  */
+  /* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
+  /* returns [v2,v1,v4,v3,v2] (blocks have length type[i]+1)        */                                     
+  /*----------------------------------------------------------------*/
   Vec<ZZ_p> flip_on_type (const Vec<ZZ_p> &v);
-  
-  Vec<ZZ> find_original_sol(const Vec<ZZ_p> &b);
-  
-  // solves for Mx = b mod p^2^n
-  void DAC (Vec<ZZ_p> &x, const Vec<ZZ_p> &b, long n);
-  
-  void reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n);
-  
+
+  /*----------------------------------------------------------------*/
+  /* applies a block reversal to v                                  */
+  /* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
+  /* returns [v2,v1,v4,v3,v2] (blocks have length type[i]+1)        */                                     
+  /*----------------------------------------------------------------*/
   Vec<Vec<ZZ>> flip_on_type(const Vec<Vec<ZZ>> &v);
   
-  Vec<hankel> create_random_hankel_on_type(long rows, const Vec<long> &type);
-  
-  hankel create_random_hankel (long rows, long cols);
-  
-  Vec<ZZ_p> mul_bottom_mosaic_diagonal(const Vec<ZZ_p>&, long);
-  
-  void dostuff();
+  /*----------------------------------------------------------------*/
+  /* multiplies b by the matrix Y_int^t D_f                         */
+  /*----------------------------------------------------------------*/
+  Vec<ZZ_p> find_original_sol(const Vec<ZZ_p> &b);
 
+  /*----------------------------------------------------------------*/
+  /* if Mx = b mod p^(2^{n-1}), updates x so that Mx = b mod p^(2^n)*/
+  /*----------------------------------------------------------------*/
+  void update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n);
+
+  /*----------------------------------------------------------------*/
+  /* computes Bv, where B is made of anti-diagonal matrices         */
+  /*----------------------------------------------------------------*/
+  Vec<ZZ_p> mul_bottom_mosaic_diagonal(const Vec<ZZ_p>& v);
+  
+  /*----------------------------------------------------------------*/
+  /* solves for Mx = b mod p^(2^n)                                  */
+  /*----------------------------------------------------------------*/
+  void DAC (Vec<ZZ> &x, const Vec<ZZ> &b, long n);
+
+  /*----------------------------------------------------------------*/
+  /* checks if every entry can be reconstructed in the current field*/
+  /*----------------------------------------------------------------*/
+  bool can_reconstruct(const Vec<ZZ_p> &v, long n);
+  
+  void reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n);
+ 
+  
   public:
   /** Ctor ***********************************************
   * f: the generating series                             *
