@@ -152,9 +152,15 @@ void shift_X(zz_pXY& b, const zz_pXY& a, const zz_p& c);
 
 /*------------------------------------------------------------*/
 /* GCD                                                        */
+/* assumes that the GCD has multiplicity 1 in a               */
 /*------------------------------------------------------------*/
 void GCD(zz_pXY& c, const zz_pXY& a, const zz_pXY& b);
 
+/*------------------------------------------------------------*/
+/* GCD                                                        */
+/* assumes that the GCD has multiplicity 1 in a               */
+/*------------------------------------------------------------*/
+void GCD(Vec<zz_pX> & c, const Vec<zz_pX>& a, const Vec<zz_pX>& b);
 
 
 #endif

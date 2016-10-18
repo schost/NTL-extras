@@ -529,6 +529,9 @@ void shift_X(zz_pXY& b, const zz_pXY& a, const zz_p& c){
 
 }
 
+/*------------------------------------------------------------*/
+/* computes c = to_zz_XY(c0*lc), makes it primitive           */
+/*------------------------------------------------------------*/
 static void reconstruct(zz_pXY & c, const zz_pEX& c0, const zz_pX & lc){
   Vec<zz_pE> coeffs;
   long d = deg(c0);
@@ -546,6 +549,9 @@ static void reconstruct(zz_pXY & c, const zz_pEX& c0, const zz_pX & lc){
     c.coeffX[i] /= cts;
 }
 
+/*------------------------------------------------------------*/
+/* tests whether c(d, Y) divides a(d, Y) for a random d       */
+/*------------------------------------------------------------*/
 static bool random_trial_division(const zz_pXY& c, const zz_pXY& a){
   zz_p d = random_zz_p();
   zz_pX cd, ad;
@@ -554,10 +560,9 @@ static bool random_trial_division(const zz_pXY& c, const zz_pXY& a){
   return ((ad % cd) == 0);
 }
 
-
-
 /*------------------------------------------------------------*/
 /* GCD                                                        */
+/* assumes that the GCD has multiplicity 1 in a               */
 /*------------------------------------------------------------*/
 void GCD(zz_pXY& c, const zz_pXY& a, const zz_pXY& b){
   long da = a.degY(), db = b.degY();
@@ -638,4 +643,16 @@ void GCD(zz_pXY& c, const zz_pXY& a, const zz_pXY& b){
 
   for (long i = 0; i <= c.degY(); i++)
     c.coeffX[i] *= g;
+}
+
+/*------------------------------------------------------------*/
+/* GCD                                                        */
+/* assumes that the GCD has multiplicity 1 in a               */
+/*------------------------------------------------------------*/
+void GCD(Vec<zz_pX> & c, const Vec<zz_pX>& a, const Vec<zz_pX>& b){
+  zz_pXY aY(a);
+  zz_pXY bY(b);
+  zz_pXY cY;
+  GCD(cY, aY, bY);
+  c = cY.coeffX;
 }
