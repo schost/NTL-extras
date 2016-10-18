@@ -8,6 +8,7 @@
 #include "lzz_pX_CRT.h"
 #include "lzz_pXY.h"
 #include "ZZXY.h"
+#include "lzz_pX_extra.h"
 
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
@@ -134,6 +135,16 @@ void random_zz_pXY(zz_pXY & f, long dx, long dy){
   f.coeffX.SetLength(dy+1);
   for (long i = 0; i <= dy; i++)
     f.coeffX[i] = random_zz_pX(dx);
+}
+
+/*------------------------------------------------------------*/
+/* evaluation with respect to X at a point                    */
+/*------------------------------------------------------------*/
+void evaluate(zz_pX & value, const zz_pXY & f, const zz_p & point){
+  value = to_zz_pX(0);
+  for (long i = 0; i <= f.degY(); i++)
+    SetCoeff(value, i, eval(f.coeffX[i], point));
+  value.normalize();
 }
 
 /*------------------------------------------------------------*/
@@ -472,4 +483,159 @@ void reduce(zz_pX & rem, const zz_pX& R, const zz_pX& S, const zz_pXY & P){
   t0 += GetTime()-t;
 }
 
- 
+/*------------------------------------------------------------*/
+/* naive multiplication                                       */
+/*------------------------------------------------------------*/
+void mul_naive(zz_pXY& c, const zz_pXY& a, const zz_pXY& b){
+  zz_pXY c_tmp;
+  long da = a.degY();
+  long db = b.degY();
+
+  c_tmp.coeffX.SetLength(da + db + 1, to_zz_pX(0));
+  for (long i = 0; i <= da; i++)
+    for (long j = 0; j <= db; j++)
+      c_tmp.coeffX[i+j] += a.coeffX[i]*b.coeffX[j];
+  c_tmp.normalize();
+  c = c_tmp;
+}
+
+
+/*------------------------------------------------------------*/
+/* contents, as a polynomial in x                             */
+/*------------------------------------------------------------*/
+void contents(zz_pX& c, const zz_pXY& a){
+  long da = a.degY();
+  if (da < 0){
+    c = 0;
+    return;
+  }
+  
+  c = a.coeffX[0];
+  for (long i = 1; i <= da; i++)
+    c = GCD(c, a.coeffX[i]);
+}
+
+
+/*------------------------------------------------------------*/
+/* computes b = a(x+c, y)                                     */
+/*------------------------------------------------------------*/
+void shift_X(zz_pXY& b, const zz_pXY& a, const zz_p& c){
+  long dX = a.degX(), dY = a.degY();
+  
+  b.coeffX.SetLength(dY+1);
+  zz_pX_shift s(c, dX);
+  for (long i = 0; i <= dY; i++)
+    s.shift(b.coeffX[i], a.coeffX[i]);
+
+}
+
+static void reconstruct(zz_pXY & c, const zz_pEX& c0, const zz_pX & lc){
+  Vec<zz_pE> coeffs;
+  long d = deg(c0);
+  coeffs.SetLength(d+1);
+  zz_pE lc_E = to_zz_pE(lc);
+  for (long i = 0; i <= d; i++)
+    coeffs[i] = coeff(c0, i) * lc_E;
+  zz_pEX pol_coeffs;
+  conv(pol_coeffs, coeffs);
+  conv(c, pol_coeffs);
+
+  zz_pX cts;
+  contents(cts, c);
+  for (long i = 0; i <= d; i++)
+    c.coeffX[i] /= cts;
+}
+
+static bool random_trial_division(const zz_pXY& c, const zz_pXY& a){
+  zz_p d = random_zz_p();
+  zz_pX cd, ad;
+  evaluate(cd, c, d);
+  evaluate(ad, a, d);
+  return ((ad % cd) == 0);
+}
+
+
+
+/*------------------------------------------------------------*/
+/* GCD                                                        */
+/*------------------------------------------------------------*/
+void GCD(zz_pXY& c, const zz_pXY& a, const zz_pXY& b){
+  long da = a.degY(), db = b.degY();
+  if (da < 0){
+    c = b;
+    return;
+  }
+  if (db < 0){
+    c = a;
+    return;
+  }
+
+  zz_p e = random_zz_p();
+  zz_pXY a_shifted, b_shifted, c_shifted;
+  shift_X(a_shifted, a, e);
+  shift_X(b_shifted, b, e);
+  zz_pX lc_a_shifted = a_shifted.coeffX[da];
+  
+  zz_pX a0, b0, diff_a0, inv_diff_a0, c0;
+  evaluate(a0, a_shifted, to_zz_p(0));
+  evaluate(b0, b_shifted, to_zz_p(0));
+  diff_a0 = diff(a0);
+  c0 = GCD(a0, b0);
+  inv_diff_a0 = InvMod(diff_a0, c0);
+
+  zz_pEContext push;
+  long prec = 1;
+  zz_pX powX = to_zz_pX(1);
+  powX = LeftShift(powX, 1);
+  zz_pE::init(powX);
+
+  Vec<zz_p> coeff_c0 = conv<Vec<zz_p>> (c0);
+  Vec<zz_pX> coeff_c0_X = conv<Vec<zz_pX>> (coeff_c0);
+  zz_pEX c0_E;
+  Vec<zz_pE> coeff_c0_E = conv<Vec<zz_pE>> (coeff_c0_X);
+  conv(c0_E, coeff_c0_E);
+  
+  Vec<zz_p> coeff_inv = conv<Vec<zz_p>> (inv_diff_a0);
+  Vec<zz_pX> coeff_inv_X = conv<Vec<zz_pX>> (coeff_inv);
+  zz_pEX inv_E;
+  Vec<zz_pE> coeff_inv_E = conv<Vec<zz_pE>> (coeff_inv_X);
+  conv(inv_E, coeff_inv_E);
+
+  reconstruct(c_shifted, c0_E, lc_a_shifted);
+
+  while (! random_trial_division(c_shifted, a_shifted)){
+    powX = LeftShift(powX, prec);
+    prec = 2 * prec;
+
+    Vec<zz_pX> c0_X = conv<Vec<zz_pX>> (c0_E.rep);
+    Vec<zz_pX> inv_X = conv<Vec<zz_pX>> (inv_E.rep);
+
+    zz_pE::init(powX);
+
+    Vec<zz_pE> coeff_c0_E = conv<Vec<zz_pE>> (c0_X);
+    conv(c0_E, coeff_c0_E);
+    Vec<zz_pE> coeff_inv_E = conv<Vec<zz_pE>> (inv_X);
+    conv(inv_E, coeff_inv_E);
+
+    zz_pEX a_E, diff_E;
+    conv(a_E, a_shifted);
+    diff_E = diff(a_E);
+    a_E = a_E % c0_E;
+    diff_E = diff_E % c0_E;
+    inv_E = 2*inv_E - MulMod(MulMod(diff_E, inv_E, c0_E), inv_E, c0_E);
+    c0_E = c0_E + MulMod(MulMod(diff(c0_E) % c0_E, inv_E, c0_E), a_E, c0_E);
+
+    reconstruct(c_shifted, c0_E, lc_a_shifted);
+
+  }
+
+  shift_X(c, c_shifted, -e);
+  
+  zz_pX contents_a, contents_b;
+  contents(contents_a, a);
+  contents(contents_b, b);
+  zz_pX g = GCD(contents_a, contents_b);
+
+  for (long i = 0; i <= c.degY(); i++)
+    c.coeffX[i] *= g;
+}

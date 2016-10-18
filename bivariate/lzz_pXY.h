@@ -100,6 +100,11 @@ void magma_assign_bi(const zz_pXY & a, const string & name);
 void random_zz_pXY(zz_pXY & f, long dx, long dy);
 
 /*------------------------------------------------------------*/
+/* evaluation with respect to X at a point                    */
+/*------------------------------------------------------------*/
+void evaluate(zz_pX & value, const zz_pXY & f, const zz_p & point);
+
+/*------------------------------------------------------------*/
 /* multipoint evaluation with respect to X                    */
 /* result is a vector of polynomials                          */
 /*------------------------------------------------------------*/
@@ -129,6 +134,27 @@ void conv(zz_pXY & f, const ZZXY & fZ);
 /*------------------------------------------------------------*/
 void reduce_naive(zz_pX & rem, const zz_pX& R, const zz_pX& S, const zz_pXY & F);
 void reduce(zz_pX & rem, const zz_pX& R, const zz_pX& S, const zz_pXY & F);
+
+/*------------------------------------------------------------*/
+/* naive multiplication                                       */
+/*------------------------------------------------------------*/
+void mul_naive(zz_pXY& c, const zz_pXY& a, const zz_pXY& b);
+
+/*------------------------------------------------------------*/
+/* contents, as a polynomial in x                             */
+/*------------------------------------------------------------*/
+void contents(zz_pX& c, const zz_pXY& a);
+
+/*------------------------------------------------------------*/
+/* computes b = a(x+c, y)                                     */
+/*------------------------------------------------------------*/
+void shift_X(zz_pXY& b, const zz_pXY& a, const zz_p& c);
+
+/*------------------------------------------------------------*/
+/* GCD                                                        */
+/*------------------------------------------------------------*/
+void GCD(zz_pXY& c, const zz_pXY& a, const zz_pXY& b);
+
 
 
 #endif
