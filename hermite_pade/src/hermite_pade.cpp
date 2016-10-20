@@ -42,6 +42,7 @@ Vec<Vec<ZZ>> hermite_pade::flip_on_type (const Vec<Vec<ZZ>> &v){
 }
 
 void hermite_pade::update_type(){
+  if (rank + 1 == sizeY) return;
 	switch_context(0);
   Vec<ZZ_p> ex1; // mult with A to get a column
   ex1.SetLength(sizeY, ZZ_p(0));
@@ -66,6 +67,8 @@ void hermite_pade::update_type(){
 	ex2[rank+1] = ZZ_p(-1);
 	ex1 = find_original_sol(ex1);
 	ex2 = find_original_sol(ex2);
+	cout << "check: " << vec_M[level].mult(flip_on_type(ex1)) << endl;
+	cout << "check: " << vec_M[level].mult(flip_on_type(ex2)) << endl;
 	Vec<zz_p> v1 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex1));
 	Vec<zz_p> v2 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex2));
 	
