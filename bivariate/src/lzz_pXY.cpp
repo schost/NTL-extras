@@ -586,6 +586,19 @@ void GCD(zz_pXY& c, const zz_pXY& a, const zz_pXY& b){
   evaluate(b0, b_shifted, to_zz_p(0));
   diff_a0 = diff(a0);
   c0 = GCD(a0, b0);
+
+  if (deg(c0) == 0){
+    Vec<zz_pX> vec_C;
+    zz_pX contents_a, contents_b;
+    contents(contents_a, a);
+    contents(contents_b, b);
+    zz_pX g = GCD(contents_a, contents_b);
+
+    vec_C.append(g);
+    c = zz_pXY(vec_C);
+    return;
+  }
+
   inv_diff_a0 = InvMod(diff_a0, c0);
 
   zz_pEContext push;
