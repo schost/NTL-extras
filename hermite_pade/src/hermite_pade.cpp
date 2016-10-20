@@ -289,7 +289,7 @@ void hermite_pade::DAC(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
 }
 
 bool hermite_pade::can_reconstruct(const Vec<ZZ_p> &v, long n){
-  if (n > 0) 
+  if (n == 0) 
     return false;
   for (long i = 0; i < v.length(); i++){
     ZZ a,b;
