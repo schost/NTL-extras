@@ -41,8 +41,8 @@ Vec<Vec<ZZ>> hermite_pade::flip_on_type (const Vec<Vec<ZZ>> &v){
   return r;
 }
 
-void hermite_pade::update_type(){
-  if (rank + 1 == sizeY) return;
+Vec<long> hermite_pade::update_type(){
+  if (rank + 1 == sizeY) return type;
 	switch_context(0);
   Vec<ZZ_p> ex1; // mult with A to get a column
   ex1.SetLength(sizeY, ZZ_p(0));
@@ -68,20 +68,25 @@ void hermite_pade::update_type(){
 	ex2[rank+1] = ZZ_p(-1);
 	ex1 = flip_on_type(find_original_sol(ex1));
 	ex2 = flip_on_type(find_original_sol(ex2));
-	cout << "sol1: " << ex1 << endl;
-	cout << "check: " << vec_M[level].mult(ex1) << endl;
-	cout << "check: " << vec_M[level].mult(ex2) << endl;
+
 	Vec<zz_p> v1 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex1));
 	Vec<zz_p> v2 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex2));
 	cout << "v1: " << v1.length() << endl;
 	
 	zz_pXY b1(split_on_type(v1));
 	zz_pXY b2(split_on_type(v2));
-	cout << "b1: " << b1 << endl;
-	cout << "b2: " << b2 << endl;
 	zz_pXY gcd;
 	GCD(gcd,b1,b2);
 	cout << "GCD: " << gcd << endl;
+	// extracting the type
+	Vec<long> t;
+	long total = 0;
+	for (long i = 0; i < gcd.coeffX.length(); i++){
+	  long degree = deg(gcd.coeffX[i]);
+	  t.append(degree);
+	  total += degree+1;
+	}
+  return t;
 }
 
 Vec<zz_pX> hermite_pade::split_on_type(const Vec<zz_p> &v){
@@ -90,7 +95,6 @@ Vec<zz_pX> hermite_pade::split_on_type(const Vec<zz_p> &v){
 	for (long i = 0; i < type.length(); i++){
 		Vec<zz_p> f;
 		for (long j = 0; j < type[i]+1; j++){
-		  cout << "appending: " << v[acc+j] << endl;
 		  f.append(v[acc+j]);
 		}
 		acc += type[i] + 1;
@@ -100,7 +104,6 @@ Vec<zz_pX> hermite_pade::split_on_type(const Vec<zz_p> &v){
 }
 
 void hermite_pade::init(const ZZX &f, const Vec<long> &type, long prec_inp, long fft_index){
-std::srand(std::time(0));
   zz_p::FFTInit(fft_index);
   ctx = zz_pContext(INIT_FFT, fft_index);
 
@@ -160,7 +163,9 @@ std::srand(std::time(0));
   conv(f_ZZ_pX, f);
   BivariateModularComp M(f_ZZ_pX, type, sizeX); // could pass in the precomputed stuff
   // initializing the pointer variables and vectors
-  vec_M.append(M);
+  vec_M.kill();
+  vec_M.SetLength(1);
+  vec_M[0] = M;
 
   // converting the preconditioners that do not change
   this->e = conv<Vec<ZZ>>(e_zz_p);
@@ -184,14 +189,17 @@ std::srand(std::time(0));
   ZZ_pX_Multipoint_FFT X_int_ZZ_p(w_p, conv<ZZ_p>(this->c), sizeX);
   ZZ_pX_Multipoint_FFT Y_int_ZZ_p(w_p, conv<ZZ_p>(this->d), sizeY);
 
-  vec_X_int.append(X_int_ZZ_p);
-  vec_Y_int.append(Y_int_ZZ_p);
+	vec_X_int.kill();
+	vec_Y_int.kill();
+	vec_X_int.SetLength(1);
+	vec_Y_int.SetLength(1);
+  vec_X_int[0] = X_int_ZZ_p;
+  vec_Y_int[0] = Y_int_ZZ_p;
 }
 
 // todo: f (the input poly) != f (the ZZ attribute)
 hermite_pade::hermite_pade(const ZZX &f, const Vec<long>& type, long prec_inp, long fft_index){
   init(f,type,prec_inp,fft_index);
-  update_type();
 }
 
 void hermite_pade::switch_context(long n){
@@ -350,7 +358,7 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   cout << "rank: " << rank << endl;
   cout << "X: " << x << endl;
   Vec<ZZ_p> soln = find_original_sol(x);
-  cout << vec_M[level].mult(flip_on_type(soln)) << endl;
+  cout << "check: " << vec_M[level].mult(flip_on_type(soln)) << endl;
   cout << soln << endl;
 
   // loop until we get enough prec
