@@ -1,6 +1,6 @@
 #include <iostream>
 #include <sstream>
-#include "hermite_pade.h"
+#include "hermite_pade_exact.h"
 using namespace std;
 
 int main(){
@@ -21,8 +21,8 @@ int main(){
     type.append(x);
   }
   cout << "type: " << type << endl;
-  hermite_pade hp(f,type,deg(f)+1,10);
+  hermite_pade_exact hp(f,type,deg(f)+1,10);
   Vec<Vec<ZZ>> sol;
-  hp.find_rand_sol(sol);
+  cout << "new type: " << hp.find_sol(sol) << endl;
   cout << "sol: " << sol << endl;
 }
