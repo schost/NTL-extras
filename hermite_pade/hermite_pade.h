@@ -37,7 +37,7 @@ class hermite_pade{
   
   void init(const ZZX &f, const Vec<long>& type, long prec, long fft_init);
   
-  void update_type();
+ 
   
   /*----------------------------------------------------------------*/
   /* multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f       */
@@ -92,6 +92,8 @@ class hermite_pade{
   hermite_pade(const ZZX &f, const Vec<long>& type, long prec, long fft_init = 0);
   
   void find_rand_sol (Vec<Vec<ZZ>> &sol); 
+  
+  Vec<long> update_type();
  
   // computes a random solution to the system
   void get_rand_sol(Vec<ZZ> &);
