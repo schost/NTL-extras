@@ -66,11 +66,11 @@ void hermite_pade::update_type(){
 	
 	ex1[rank] = ZZ_p(-1);
 	ex2[rank+1] = ZZ_p(-1);
-	ex1 = find_original_sol(ex1);
-	ex2 = find_original_sol(ex2);
-	cout << "sol1: " << ex1.length() << endl;
-	cout << "check: " << vec_M[level].mult(flip_on_type(ex1)) << endl;
-	cout << "check: " << vec_M[level].mult(flip_on_type(ex2)) << endl;
+	ex1 = flip_on_type(find_original_sol(ex1));
+	ex2 = flip_on_type(find_original_sol(ex2));
+	cout << "sol1: " << ex1 << endl;
+	cout << "check: " << vec_M[level].mult(ex1) << endl;
+	cout << "check: " << vec_M[level].mult(ex2) << endl;
 	Vec<zz_p> v1 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex1));
 	Vec<zz_p> v2 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex2));
 	cout << "v1: " << v1.length() << endl;
@@ -81,7 +81,7 @@ void hermite_pade::update_type(){
 	cout << "b2: " << b2 << endl;
 	zz_pXY gcd;
 	GCD(gcd,b1,b2);
-	cout << gcd << endl;
+	cout << "GCD: " << gcd << endl;
 }
 
 Vec<zz_pX> hermite_pade::split_on_type(const Vec<zz_p> &v){
@@ -107,7 +107,7 @@ std::srand(std::time(0));
   p = zz_p::modulus();
   ZZ_p::init(ZZ(p));
   p_powers.append(ZZ(p));
-  //cout << "p: " << p << endl;
+  cout << "p: " << p << endl;
   long prec = deg(f) + 1;
   f_full_prec = f;
   this->type = type;
