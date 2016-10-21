@@ -35,12 +35,9 @@ class hermite_pade{
   // switches the field to mod p^2^n
   void switch_context(long n);
   
-
-  /*----------------------------------------------------------------*/
-  /* returns a block of bi-sub-diagonal hankel matrices             */
-  /* size is determined by the type                                 */
-  /*----------------------------------------------------------------*/
-  Vec<hankel> create_random_hankel_on_type();
+  void init(const ZZX &f, const Vec<long>& type, long prec, long fft_init);
+  
+  void update_type();
   
   /*----------------------------------------------------------------*/
   /* multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f       */
@@ -72,11 +69,6 @@ class hermite_pade{
   /* if Mx = b mod p^(2^{n-1}), updates x so that Mx = b mod p^(2^n)*/
   /*----------------------------------------------------------------*/
   void update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n);
-
-  /*----------------------------------------------------------------*/
-  /* computes Bv, where B is made of anti-diagonal matrices         */
-  /*----------------------------------------------------------------*/
-  Vec<ZZ_p> mul_bottom_mosaic_diagonal(const Vec<ZZ_p>& v);
   
   /*----------------------------------------------------------------*/
   /* solves for Mx = b mod p^(2^n)                                  */
@@ -90,6 +82,7 @@ class hermite_pade{
   
   void reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n);
  
+  Vec<zz_pX> split_on_type(const Vec<zz_p> &v);
   
   public:
   /** Ctor ***********************************************

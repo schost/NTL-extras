@@ -62,15 +62,18 @@ void hermite_pade::update_type(){
 	conv(ex2,sol2);
 	ex1.SetLength(sizeY, ZZ_p(0));
   ex2.SetLength(sizeY, ZZ_p(0));
+  cout << "ex1: " << ex1 << endl;
 	
 	ex1[rank] = ZZ_p(-1);
 	ex2[rank+1] = ZZ_p(-1);
 	ex1 = find_original_sol(ex1);
 	ex2 = find_original_sol(ex2);
+	cout << "sol1: " << ex1.length() << endl;
 	cout << "check: " << vec_M[level].mult(flip_on_type(ex1)) << endl;
 	cout << "check: " << vec_M[level].mult(flip_on_type(ex2)) << endl;
 	Vec<zz_p> v1 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex1));
 	Vec<zz_p> v2 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex2));
+	cout << "v1: " << v1.length() << endl;
 	
 	zz_pXY b1(split_on_type(v1));
 	zz_pXY b2(split_on_type(v2));
@@ -86,8 +89,10 @@ Vec<zz_pX> hermite_pade::split_on_type(const Vec<zz_p> &v){
 	Vec<zz_pX> result;
 	for (long i = 0; i < type.length(); i++){
 		Vec<zz_p> f;
-		for (long j = 0; j < type[i]+1; j++)
+		for (long j = 0; j < type[i]+1; j++){
+		  cout << "appending: " << v[acc+j] << endl;
 		  f.append(v[acc+j]);
+		}
 		acc += type[i] + 1;
 		result.append(conv<zz_pX>(f));
 	}
