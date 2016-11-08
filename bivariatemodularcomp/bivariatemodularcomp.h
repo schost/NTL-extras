@@ -9,11 +9,16 @@
 class BivariateModularComp {
   NTL::ZZ_pX f_field;
   NTL::ZZ_pX F_field;
+  NTL::Vec<NTL::ZZ_pX> fs_field;
   NTL::Vec<long> type; // the type for the matrix (in Hermite-Pade approximants)
   NTL::Mat<NTL::ZZ_pX> B; // the right side of the matrix multiplication
   long prec; // precision of the returned vector
   long sqrtP; // ceiling of the sqrt of the number of blocks
   bool initialized = false;
+  /* switches which multiplication to use: */
+  /* 0 - bivariate modular composition     */
+  /* 1 - naive multiplication              */
+  long mode; 
 
   /*******************************************************************
   * Helpers                                                          *
@@ -46,12 +51,18 @@ public:
   // initialize without calculating the powers, assumes fs = {f^0, f^1, f^2 ...}
   // throws an exception if not enough powers of f are given
   void init (const NTL::Vec<NTL::ZZ_pX>& fs, const NTL::Vec<long> &type, long prec);
-   
-  // multiplies rhs with the matrix created by the powers of f in
+  
+   // multiplies rhs with the matrix created by the powers of f in
   // the given type by using Horner's rule
   NTL::Vec<NTL::ZZ_p> mult_Horners(const NTL::Vec<NTL::ZZ_p> &rhs);
 
   // multiply using the new algorithm
+  NTL::Vec<NTL::ZZ_p> mult_comp (const NTL::Vec<NTL::ZZ_p> &rhs);
+  
+  // multiply naively as a0*f0 + a1*f1 + a2*f2
+  NTL::Vec<NTL::ZZ_p> mult_naive (const NTL::Vec<NTL::ZZ_p> &rhs);
+  
+  // header for multiplying
   NTL::Vec<NTL::ZZ_p> mult (const NTL::Vec<NTL::ZZ_p> &rhs);
 };
 #endif

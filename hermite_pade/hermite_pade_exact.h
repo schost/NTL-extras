@@ -1,11 +1,15 @@
-#include "hermite_pade.h"
+#include "hermite_pade_algebraic.h"
 
 class hermite_pade_exact{
-	hermite_pade HP;
+	hermite_pade *HP;
 	Vec<long> new_type;
 	
 	public:
 	hermite_pade_exact(const ZZX &f, const Vec<long> &type, long prec_inp, long fft_index);
 	
+	hermite_pade_exact(const Vec<ZZX> &f, const Vec<long> &type, long prec_inp, long fft_index);
+	
 	Vec<long> find_sol(Vec<Vec<ZZ>> &sol);
+	
+	~hermite_pade_exact(){delete HP;}
 };

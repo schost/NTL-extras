@@ -30,21 +30,17 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
   F_field = running;
   create_rhs_matrix(B, fs);
   initialized = true;
+  mode = 0;
 }
 
 void BivariateModularComp::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
   sqrtP = ceil(sqrt(type.length()));
-  if (fs.length() <= sqrtP) throw "not enough powers of f";
+  if (fs.length() <= sqrtP) throw "not enough functions";
   this->type = type;
   this->prec = prec;
-  f_field = fs[1];
-  Vec<ZZ_pX> sub_fs;
-  sub_fs.SetLength(sqrtP);
-  for (long i = 0; i < sqrtP; i++)
-    sub_fs[i] = fs[i];
-  F_field = fs[sqrtP];
-  create_rhs_matrix(B,fs);
+  fs_field = fs;
   initialized = true;
+  mode = 1;
 }
 
 BivariateModularComp::BivariateModularComp(){}
@@ -150,6 +146,7 @@ void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
 
 Vec<ZZ_p> BivariateModularComp::mult_Horners(const Vec<ZZ_p> &rhs){
   if (!initialized) throw "must init first";
+	if (mode != 0) throw "wrong mode";
   Vec<ZZ_pX> rhs_poly;
   create_lhs_list(rhs_poly, rhs);
   ZZ_pX result = rhs_poly[rhs_poly.length()-1];
@@ -164,8 +161,28 @@ Vec<ZZ_p> BivariateModularComp::mult_Horners(const Vec<ZZ_p> &rhs){
   return v;
 }
 
+Vec<ZZ_p> BivariateModularComp::mult_naive(const Vec<ZZ_p> &rhs){
+	if (!initialized) throw "must init first";
+	Vec<ZZ_pX> rhs_poly;
+	create_lhs_list(rhs_poly,rhs);
+	ZZ_pX result;
+	for (long i = 0; i < fs_field.length(); i++)
+		result += fs_field[i] * rhs_poly[i];
+	Vec<ZZ_p> v;
+	v.SetLength(prec);
+	for (long i = 0; i < prec; i++)
+		v[i] = coeff(result, i);
+	return v;
+}
+
 Vec<ZZ_p> BivariateModularComp::mult(const Vec<ZZ_p> &rhs){
+	if (mode == 0) return mult_comp(rhs);
+	return mult_naive(rhs);
+}
+
+Vec<ZZ_p> BivariateModularComp::mult_comp(const Vec<ZZ_p> &rhs){
   if (!initialized) throw "must init first";
+  if (mode != 0) throw "wrong mode";
   Mat<ZZ_pX> A0, A;
   Vec<ZZ_pX> rhs_poly;
 
