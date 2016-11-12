@@ -54,15 +54,15 @@ public:
   
    // multiplies rhs with the matrix created by the powers of f in
   // the given type by using Horner's rule
-  NTL::Vec<NTL::ZZ_p> mult_Horners(const NTL::Vec<NTL::ZZ_p> &rhs);
+  NTL::Vec<NTL::ZZ_p> mult_right_Horners(const NTL::Vec<NTL::ZZ_p> &rhs);
 
   // multiply using the new algorithm
-  NTL::Vec<NTL::ZZ_p> mult_comp (const NTL::Vec<NTL::ZZ_p> &rhs);
+  NTL::Vec<NTL::ZZ_p> mult_right_comp (const NTL::Vec<NTL::ZZ_p> &rhs);
   
   // multiply naively as a0*f0 + a1*f1 + a2*f2
-  NTL::Vec<NTL::ZZ_p> mult_naive (const NTL::Vec<NTL::ZZ_p> &rhs);
+  NTL::Vec<NTL::ZZ_p> mult_right_naive (const NTL::Vec<NTL::ZZ_p> &rhs);
   
   // header for multiplying
-  NTL::Vec<NTL::ZZ_p> mult (const NTL::Vec<NTL::ZZ_p> &rhs);
+  NTL::Vec<NTL::ZZ_p> mult_right (const NTL::Vec<NTL::ZZ_p> &rhs);
 };
 #endif

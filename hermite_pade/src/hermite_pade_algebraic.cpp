@@ -224,7 +224,7 @@ Vec<ZZ_p> hermite_pade_algebraic::mulA_right(const Vec<ZZ_p>& b){
 
   // TODO: should there be a function for the product by M?
   Vec<ZZ_p> flipped = flip_on_type(x);
-  x = vec_M[level].mult(flipped);
+  x = vec_M[level].mult_right(flipped);
 
   vec_X_int[level].mul_right(x, x);
   Vec<ZZ_p> e = conv<Vec<ZZ_p>>(this->e);
@@ -360,7 +360,7 @@ void hermite_pade_algebraic::find_rand_sol(Vec<Vec<ZZ>> &sol){
     ZZ_pX f_p;
     conv(f_p, f_full_prec);
     BivariateModularComp m_new(f_p, type, rank);
-    cout << "Double check with p = " << ZZ_p::modulus() << ": " << m_new.mult(soln2) << endl;
+    cout << "Double check with p = " << ZZ_p::modulus() << ": " << m_new.mult_right(soln2) << endl;
   }
 }
 

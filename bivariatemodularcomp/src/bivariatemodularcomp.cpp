@@ -144,7 +144,7 @@ void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
   // }
 }
 
-Vec<ZZ_p> BivariateModularComp::mult_Horners(const Vec<ZZ_p> &rhs){
+Vec<ZZ_p> BivariateModularComp::mult_right_Horners(const Vec<ZZ_p> &rhs){
   if (!initialized) throw "must init first";
 	if (mode != 0) throw "wrong mode";
   Vec<ZZ_pX> rhs_poly;
@@ -161,7 +161,7 @@ Vec<ZZ_p> BivariateModularComp::mult_Horners(const Vec<ZZ_p> &rhs){
   return v;
 }
 
-Vec<ZZ_p> BivariateModularComp::mult_naive(const Vec<ZZ_p> &rhs){
+Vec<ZZ_p> BivariateModularComp::mult_right_naive(const Vec<ZZ_p> &rhs){
 	if (!initialized) throw "must init first";
 	Vec<ZZ_pX> rhs_poly;
 	create_lhs_list(rhs_poly,rhs);
@@ -175,12 +175,12 @@ Vec<ZZ_p> BivariateModularComp::mult_naive(const Vec<ZZ_p> &rhs){
 	return v;
 }
 
-Vec<ZZ_p> BivariateModularComp::mult(const Vec<ZZ_p> &rhs){
-	if (mode == 0) return mult_comp(rhs);
-	return mult_naive(rhs);
+Vec<ZZ_p> BivariateModularComp::mult_right(const Vec<ZZ_p> &rhs){
+	if (mode == 0) return mult_right_comp(rhs);
+	return mult_right_naive(rhs);
 }
 
-Vec<ZZ_p> BivariateModularComp::mult_comp(const Vec<ZZ_p> &rhs){
+Vec<ZZ_p> BivariateModularComp::mult_right_comp(const Vec<ZZ_p> &rhs){
   if (!initialized) throw "must init first";
   if (mode != 0) throw "wrong mode";
   Mat<ZZ_pX> A0, A;
