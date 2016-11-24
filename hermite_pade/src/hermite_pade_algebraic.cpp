@@ -30,7 +30,8 @@ Vec<long> hermite_pade_algebraic::update_type(){
   	add2[i] = rand() % 100 + 1;
   	ex2[rank+i] = add2[i];
   }
-	
+  
+ 
 	ex1 = mulA_right(ex1);
 	ex2 = mulA_right(ex2);
 	Vec<ZZ> sol1,sol2;
@@ -51,12 +52,18 @@ Vec<long> hermite_pade_algebraic::update_type(){
   }
 	ex1 = flip_on_type(mul_Y_right(ex1));
 	ex2 = flip_on_type(mul_Y_right(ex2));
+	cout <<"ex2: " << ex2 << endl;
 
 	Vec<zz_p> v1 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex1));
 	Vec<zz_p> v2 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex2));
+	cout <<"v1: " << split_on_type(v1) << endl;
+  cout <<"v2: " << v2 << endl;
+	
 	
 	zz_pXY b1(split_on_type(v1));
 	zz_pXY b2(split_on_type(v2));
+  cout <<"v1: " << b1 << endl;
+  cout <<"v2: " << b2 << endl;
 	zz_pXY gcd;
 	GCD(gcd,b1,b2);
 	cout << "GCD: " << gcd << endl;
@@ -87,7 +94,6 @@ Vec<zz_pX> hermite_pade_algebraic::split_on_type(const Vec<zz_p> &v){
 
 
 void hermite_pade_algebraic::init(const ZZX &f, const Vec<long> &type, long prec_inp, long fft_index){
-  set_up_field(fft_index);
   
   long prec = deg(f) + 1;
   f_full_prec = f;
@@ -95,7 +101,6 @@ void hermite_pade_algebraic::init(const ZZX &f, const Vec<long> &type, long prec
   zz_pX f_field;
   conv(f_field, f);
   this->prec = prec;
-  level = 0;
   
   // setting up the mosaic Hankel matrix
   Vec<hankel> vec_H;
@@ -167,38 +172,13 @@ void hermite_pade_algebraic::init(const ZZX &f, const Vec<long> &type, long prec
 }
 
 // todo: f (the input poly) != f (the ZZ attribute)
-hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long prec_inp, long fft_index){
+hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long prec_inp, long fft_index):hermite_pade(fft_index){
   init(f,type,prec_inp,fft_index);
 }
 
 void hermite_pade_algebraic::set_up_bmc(){
 	ZZ_pX f_p;
   conv(f_p, f_full_prec);
-  BivariateModularComp m_new(f_p, type, rank);
+  BivariateModularComp m_new(f_p, type, sizeY);
   vec_M.append(m_new);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

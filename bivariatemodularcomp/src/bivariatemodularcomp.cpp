@@ -11,6 +11,7 @@ using namespace std;
 using namespace NTL;
 
 void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long prec_new){
+  cout << "init 1" << endl;
   type = type_new;
   f_field = f;
 
@@ -34,13 +35,12 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
 }
 
 void BivariateModularComp::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
-  sqrtP = ceil(sqrt(type.length()));
-  if (fs.length() <= sqrtP) throw "not enough functions";
   this->type = type;
   this->prec = prec;
   fs_field = fs;
   initialized = true;
   mode = 1;
+  cout <<"init2"<<endl;
 }
 
 BivariateModularComp::BivariateModularComp(){}
@@ -163,11 +163,12 @@ Vec<ZZ_p> BivariateModularComp::mult_right_Horners(const Vec<ZZ_p> &rhs){
 
 Vec<ZZ_p> BivariateModularComp::mult_right_naive(const Vec<ZZ_p> &rhs){
 	if (!initialized) throw "must init first";
+	cout << "here" << endl;
 	Vec<ZZ_pX> rhs_poly;
 	create_lhs_list(rhs_poly,rhs);
 	ZZ_pX result;
 	for (long i = 0; i < fs_field.length(); i++)
-		result += fs_field[i] * rhs_poly[i];
+		result += trunc(fs_field[i] * rhs_poly[i],prec);
 	Vec<ZZ_p> v;
 	v.SetLength(prec);
 	for (long i = 0; i < prec; i++)
@@ -176,6 +177,7 @@ Vec<ZZ_p> BivariateModularComp::mult_right_naive(const Vec<ZZ_p> &rhs){
 }
 
 Vec<ZZ_p> BivariateModularComp::mult_right(const Vec<ZZ_p> &rhs){
+  cout << "mode: " << mode << endl;
 	if (mode == 0) return mult_right_comp(rhs);
 	return mult_right_naive(rhs);
 }

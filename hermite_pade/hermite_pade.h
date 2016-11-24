@@ -68,7 +68,6 @@ class hermite_pade{
   /* multiplies E_f * X_int * b                                     */
   /*----------------------------------------------------------------*/
   Vec<ZZ_p> mul_X_right(Vec<ZZ_p> b);
-  
 
   /*----------------------------------------------------------------*/
   /* if Mx = b mod p^(2^{n-1}), updates x so that Mx = b mod p^(2^n)*/
@@ -91,6 +90,10 @@ class hermite_pade{
   /* multiplies M*b                                                 */
   /*----------------------------------------------------------------*/
   virtual Vec<ZZ_p> mul_M_right(const Vec<ZZ_p> &b);
+  
+  hermite_pade(long fft_index): level{0}{
+  	set_up_field(fft_index);
+  }
 
   public:
   void find_rand_sol (NTL::Vec<NTL::Vec<NTL::ZZ>> &sol);
