@@ -14,6 +14,7 @@
 
 class hermite_pade_algebraic : public hermite_pade{
   ZZX f_full_prec; // the polynomial in full precision
+  ZZ denom = ZZ{1}; // the denominator for every entry in f
 
   /**** helpers *****************************************/ 
   
@@ -31,6 +32,8 @@ class hermite_pade_algebraic : public hermite_pade{
   * type: the type of the approximant                    *
   *******************************************************/
   hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long prec, long fft_init = 0);
+  
+  hermite_pade_algebraic(const ZZX &f, const ZZ &denom, const Vec<long>& type, long prec_inp, long fft_index);
   
   Vec<long> update_type();
   

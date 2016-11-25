@@ -92,7 +92,7 @@ hermite_pade_non_algebraic::hermite_pade_non_algebraic
 void hermite_pade_non_algebraic::set_up_bmc(){
 	Vec<ZZ_pX> fs_p;
 	conv(fs_p, vec_fs);
-	BivariateModularComp m_new(fs_p, type, sizeY);
+	BivariateModularComp m_new(fs_p, type, sizeX);
 	vec_M.append(m_new);
 }
 

@@ -31,7 +31,6 @@ Vec<long> hermite_pade_algebraic::update_type(){
   	ex2[rank+i] = add2[i];
   }
   
- 
 	ex1 = mulA_right(ex1);
 	ex2 = mulA_right(ex2);
 	Vec<ZZ> sol1,sol2;
@@ -105,7 +104,10 @@ void hermite_pade_algebraic::init(const ZZX &f, const Vec<long> &type, long prec
   // setting up the mosaic Hankel matrix
   Vec<hankel> vec_H;
   zz_pX running {1};
+  zz_p denom_p = conv<zz_p>(denom);
+  cout << "p = " << p << endl;
   for (long i = 0; i < type.length(); i++){
+    cout <<"running: " << running << endl;
     Vec<zz_p> v;
     Vec<zz_p> inp_vec;
     conv(v,running);
@@ -116,10 +118,14 @@ void hermite_pade_algebraic::init(const ZZX &f, const Vec<long> &type, long prec
         inp_vec.append(zz_p{0});
     vec_H.append(hankel(inp_vec, prec, type[i] + 1));
     running = running * f_field;
+    running /= denom_p;
   }
   Vec<Vec<hankel>> hankel_matrices;
   hankel_matrices.append(vec_H);
   mosaic_hankel MH(hankel_matrices);
+  Mat<zz_p> mat;
+  to_dense(mat,MH);
+  cout << "mat: " << mat << endl;
   
   cauchy_like_geometric_special CL; // the cauchy matrix
   zz_pX_Multipoint_Geometric X_int, Y_int; // preconditioners
@@ -132,14 +138,9 @@ void hermite_pade_algebraic::init(const ZZX &f, const Vec<long> &type, long prec
   sizeX = X_int.length();
   sizeY = Y_int.length();
 	
-  // initializing the bivariate modular comp
-  ZZ_pX f_ZZ_pX;
-  conv(f_ZZ_pX, f);
-  BivariateModularComp M(f_ZZ_pX, type, sizeX); // could pass in the precomputed stuff
   // initializing the pointer variables and vectors
   vec_M.kill();
-  vec_M.SetLength(1);
-  vec_M[0] = M;
+  set_up_bmc();
 
   // converting the preconditioners that do not change
   this->e = conv<Vec<ZZ>>(e_zz_p);
@@ -178,7 +179,27 @@ hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& ty
 
 void hermite_pade_algebraic::set_up_bmc(){
 	ZZ_pX f_p;
+	ZZ_p denom_p= conv<ZZ_p>(denom);
   conv(f_p, f_full_prec);
-  BivariateModularComp m_new(f_p, type, sizeY);
+  f_p /= denom_p;
+  BivariateModularComp m_new(f_p, type, sizeX);
   vec_M.append(m_new);
 }
+
+hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const ZZ &denom, const Vec<long>& type, long prec_inp, long fft_index):hermite_pade(fft_index)
+{
+	this->denom = denom;
+	init(f,type,prec_inp,fft_index);
+}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -9,6 +9,8 @@ class hermite_pade_exact{
 	
 	hermite_pade_exact(const Vec<ZZX> &f, const Vec<long> &type, long prec_inp, long fft_index);
 	
+	hermite_pade_exact(const ZZX &f, const ZZ &denom, const Vec<long> &type, long prec_inp, long fft_index);
+	
 	Vec<long> find_sol(Vec<Vec<ZZ>> &sol);
 	
 	~hermite_pade_exact(){delete HP;}
