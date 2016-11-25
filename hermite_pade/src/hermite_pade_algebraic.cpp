@@ -182,8 +182,7 @@ void hermite_pade_algebraic::set_up_bmc(){
 	ZZ_p denom_p= conv<ZZ_p>(denom);
   conv(f_p, f_full_prec);
   f_p /= denom_p;
-  BivariateModularComp m_new(f_p, type, sizeX);
-  vec_M.append(m_new);
+  vec_M.append(new BivariateModularComp(f_p, type, sizeX));
 }
 
 hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const ZZ &denom, const Vec<long>& type, long prec_inp, long fft_index):hermite_pade(fft_index)

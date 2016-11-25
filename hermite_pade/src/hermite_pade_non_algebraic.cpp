@@ -3,6 +3,7 @@
 #include "vec_ZZ_p_extra.h"
 #include "lzz_pXY.h"
 #include "lzz_p_extra.h"
+#include "non_algebraic_mosaic_toeplitz_mul_ZZ_p.h"
 using namespace NTL;
 
 Vec<hankel> hermite_pade_non_algebraic::increase_rank(){
@@ -92,8 +93,7 @@ hermite_pade_non_algebraic::hermite_pade_non_algebraic
 void hermite_pade_non_algebraic::set_up_bmc(){
 	Vec<ZZ_pX> fs_p;
 	conv(fs_p, vec_fs);
-	BivariateModularComp m_new(fs_p, type, sizeX);
-	vec_M.append(m_new);
+	vec_M.append(new non_algebraic_mosaic_toeplitz_mul_ZZ_p(fs_p, type, sizeX));
 }
 
 Vec<ZZ_p> hermite_pade_non_algebraic::mul_M_right(const Vec<ZZ_p> &b){

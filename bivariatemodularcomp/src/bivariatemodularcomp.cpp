@@ -30,40 +30,12 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
 
   F_field = running;
   create_rhs_matrix(B, fs);
-  initialized = true;
-  mode = 0;
-}
-
-void BivariateModularComp::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
-  this->type = type;
-  this->prec = prec;
-  fs_field = fs;
-  initialized = true;
-  mode = 1;
-  cout <<"init2"<<endl;
 }
 
 BivariateModularComp::BivariateModularComp(){}
 
-BivariateModularComp::BivariateModularComp(const ZZ_pX& f, const Vec<long> &type, long prec) {
+BivariateModularComp::BivariateModularComp(const ZZ_pX& f, const Vec<long> &type, long prec): mosaic_toeplitz_mul_ZZ_p(type,prec){
   init(f,type,prec);
-}
-
-BivariateModularComp::BivariateModularComp(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
-  init(fs,type,prec);
-}
-
-void BivariateModularComp::create_lhs_list (Vec<ZZ_pX> & result, const Vec<ZZ_p> &v){
-  const ZZ_p *vc = v.elts();
-  result.SetLength(type.length());
-  for (long i = 0; i < type.length(); i++){
-    result[i].rep.SetLength(type[i] + 1);
-    ZZ_p * cf = result[i].rep.elts();
-    for (int j = 0; j < type[i] + 1; j++)
-      cf[j] = vc[j];
-    vc += type[i] + 1;
-    result[i].normalize();
-  }
 }
 
 void BivariateModularComp::create_lhs_matrix(Mat<ZZ_pX> &A,const Vec<ZZ_pX> &v){
@@ -146,7 +118,6 @@ void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
 
 Vec<ZZ_p> BivariateModularComp::mult_right_Horners(const Vec<ZZ_p> &rhs){
   if (!initialized) throw "must init first";
-	if (mode != 0) throw "wrong mode";
   Vec<ZZ_pX> rhs_poly;
   create_lhs_list(rhs_poly, rhs);
   ZZ_pX result = rhs_poly[rhs_poly.length()-1];
@@ -161,30 +132,14 @@ Vec<ZZ_p> BivariateModularComp::mult_right_Horners(const Vec<ZZ_p> &rhs){
   return v;
 }
 
-Vec<ZZ_p> BivariateModularComp::mult_right_naive(const Vec<ZZ_p> &rhs){
-	if (!initialized) throw "must init first";
-	cout << "here" << endl;
-	Vec<ZZ_pX> rhs_poly;
-	create_lhs_list(rhs_poly,rhs);
-	ZZ_pX result;
-	for (long i = 0; i < fs_field.length(); i++)
-		result += trunc(fs_field[i] * rhs_poly[i],prec);
-	Vec<ZZ_p> v;
-	v.SetLength(prec);
-	for (long i = 0; i < prec; i++)
-		v[i] = coeff(result, i);
-	return v;
-}
+
 
 Vec<ZZ_p> BivariateModularComp::mult_right(const Vec<ZZ_p> &rhs){
-  cout << "mode: " << mode << endl;
-	if (mode == 0) return mult_right_comp(rhs);
-	return mult_right_naive(rhs);
+	return mult_right_comp(rhs);
 }
 
 Vec<ZZ_p> BivariateModularComp::mult_right_comp(const Vec<ZZ_p> &rhs){
   if (!initialized) throw "must init first";
-  if (mode != 0) throw "wrong mode";
   Mat<ZZ_pX> A0, A;
   Vec<ZZ_pX> rhs_poly;
 

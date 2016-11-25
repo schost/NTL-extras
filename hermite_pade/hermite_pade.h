@@ -12,6 +12,8 @@
 #include "bivariatemodularcomp.h"
 #include "ZZ_pX_CRT.h"
 #include "cauchy_geometric_special.h"
+#include <memory>
+#include "mosaic_toeplitz_mul_ZZ_p.h"
 
 // abstract base class for hermite pade classes
 class hermite_pade{
@@ -24,7 +26,7 @@ class hermite_pade{
   long added; // number of rows added
   long level;
   zz_pContext ctx; // zz_p 
-  Vec<BivariateModularComp> vec_M;
+  Vec<mosaic_toeplitz_mul_ZZ_p*> vec_M;
   Vec<ZZ_pX_Multipoint_FFT> vec_X_int, vec_Y_int; // to store already calculated powers
   Vec<ZZ> p_powers; // already calculated values of p^2^n
   Vec<ZZ> e, f; // for precondition the Cauchy Matrix
@@ -98,7 +100,6 @@ class hermite_pade{
   public:
   void find_rand_sol (NTL::Vec<NTL::Vec<NTL::ZZ>> &sol);
   virtual ~hermite_pade();
-  
 };
 
 #endif

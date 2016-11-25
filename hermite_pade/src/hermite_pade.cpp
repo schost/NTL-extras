@@ -4,7 +4,9 @@
 #include "lzz_p_extra.h"
 using namespace NTL;
 
-hermite_pade::~hermite_pade(){}
+hermite_pade::~hermite_pade(){
+  for (long i = 0; i < vec_M.length(); i++) delete vec_M[i];
+}
 
 /*----------------------------------------------------------------*/
 /* applies a block reversal to v                                  */
@@ -101,7 +103,7 @@ Vec<ZZ_p> hermite_pade::mulA_right(const Vec<ZZ_p>& b){
 
 Vec<ZZ_p> hermite_pade::mul_M_right(const Vec<ZZ_p> &b){
   Vec<ZZ_p> flipped = flip_on_type(b);
-  return vec_M[level].mult_right(flipped);
+  return vec_M[level]->mult_right(flipped);
 }
 
 Vec<ZZ_p> hermite_pade::mul_X_right(Vec<ZZ_p> b){
