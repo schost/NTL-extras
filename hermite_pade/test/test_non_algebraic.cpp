@@ -30,5 +30,8 @@ int main(){
     type.append(num_fs);
   cout << "fs: " << fs << endl;
   cout << "type: " << type << endl;
-  hermite_pade_non_algebraic(fs, type, 3);
+  hermite_pade_non_algebraic hp(fs, type, 3);
+  Vec<Vec<ZZ>> vs;
+  hp.find_rand_sol(vs);
+  cout << vs << endl;
 }

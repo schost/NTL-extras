@@ -2,12 +2,14 @@
 
 class hermite_pade_non_algebraic : public hermite_pade{
 	NTL::Vec<NTL::ZZX> vec_fs;
-	NTL::Vec<NTL::ZZX> vec_added;
+	NTL::Vec<Vec<long>> vec_added;
+	long rows_added;
+	long original_sizeX;
 	
 	/*---------------------------------------------------------*/
 	/* tries to increase the rank of M by adding random blocks */
 	/*---------------------------------------------------------*/
-	Vec<hankel> increase_rank();
+	Vec<hankel> increase_rank(long add);
 	
 	void set_up_bmc() override;
 	

@@ -11,7 +11,7 @@ using namespace std;
 using namespace NTL;
 
 void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long prec_new){
-  cout << "init 1" << endl;
+	initialized = true;
   type = type_new;
   f_field = f;
 

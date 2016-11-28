@@ -191,6 +191,20 @@ void hermite_pade::reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n){
   }
 }
 
+Vec<Vec<ZZ_p>> hermite_pade::split_on_type(const Vec<ZZ_p> &v){
+	long acc = 0;
+	Vec<Vec<ZZ_p>> result;
+	for (long i = 0; i < type.length(); i++){
+		Vec<ZZ_p> f;
+		for (long j = 0; j < type[i]+1; j++){
+		  f.append(v[acc+j]);
+		}
+		acc += type[i] + 1;
+		result.append(f);
+	}
+	return result;
+}
+
 void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   zz_pContext zz_p_push;
   zz_pContext ZZ_p_push;
@@ -215,6 +229,7 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   // loop until we get enough prec
   while(!can_reconstruct(soln, n)){
     switch_context(++n);
+    cout << "n: " << n << endl;
     
     Vec<ZZ_p> extractor; // mult with A to get a column
     extractor.SetLength(sizeY, ZZ_p(0));
@@ -240,7 +255,38 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   
   reconstruct(sol, soln, n);
   sol = flip_on_type(sol);
+  
+  /***********************************************
+  ZZ_p::init(ZZ(13));
+  Vec<ZZ_p> check;
+  for (long i = 0; i < sol.length(); i++){
+    check.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));	
+  }
+  
+  cout << "check: " << mul_M_right(check) << endl;
+  
+  
+  ***********************************************/
+  
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

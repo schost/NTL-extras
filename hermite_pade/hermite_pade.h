@@ -96,6 +96,8 @@ class hermite_pade{
   hermite_pade(long fft_index): level{0}{
   	set_up_field(fft_index);
   }
+  
+  Vec<Vec<ZZ_p>> split_on_type(const Vec<ZZ_p> &v);
 
   public:
   void find_rand_sol (NTL::Vec<NTL::Vec<NTL::ZZ>> &sol);
