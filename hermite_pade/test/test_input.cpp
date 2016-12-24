@@ -8,17 +8,27 @@ int main(){
   Vec<long> type;
   string s;
   getline(cin,s);
+  cout << "line: " << s << endl;
   istringstream iss(s);
-  long x;
+  ZZ x;
+  long t;
   long i = 0;
-  while(iss>>x){
+  while(true){
+  	iss>>x;
+  	if (iss.eof()) break;
+  	if (iss.fail() && !iss.eof()){
+  		iss.clear();
+  		iss.ignore();
+  	}
+  	
+    cout << x << endl;
     SetCoeff(f,i++,x);
   }
   cout << "f: " << f << endl;
   getline(cin,s);
   iss = istringstream(s);
-  while (iss >> x){
-    type.append(x);
+  while (iss >> t){
+    type.append(t);
   }
   cout << "type: " << type << endl;
   hermite_pade_exact hp(f,type,deg(f)+1,10);

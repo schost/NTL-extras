@@ -29,6 +29,7 @@ void BivariateModularComp::init (const ZZ_pX &f, const Vec<long> &type_new, long
   }
 
   F_field = running;
+  cout << "F_field: " << F_field << endl;
   create_rhs_matrix(B, fs);
 }
 
@@ -67,7 +68,9 @@ void BivariateModularComp::create_rhs_matrix(Mat<ZZ_pX> &B,const Vec<ZZ_pX> &v){
 void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
 
   D.SetLength(C.NumRows());
-
+  
+	cout << "type: " << type << endl;
+	
   long s = 0;
   for (long i = 0; i < type.length(); i++)
     s += max(s, type[i]);
@@ -83,14 +86,19 @@ void BivariateModularComp::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
     for (long j = 0; j < old_len; j++)
       cv[j] = cC[j];
     cv += type[0]+1;
+    cout << "old_len: " << old_len << endl;
     for (long a = 1; a < C.NumCols(); a++){
       const ZZ_p * cC = Ci[a].rep.elts();
       long new_len = Ci[a].rep.length();
-      for (long j = 0; j < min(old_len-(type[a-1]+1), new_len); j++)
+      for (long j = 0; j < min(old_len-(type[a-1]+1), new_len); j++){
+      	cout << "a: " << a << " j: " << j << endl;
       	cv[j] += cC[j];
-      if (old_len >= (type[a-1]+1))
-	for (long j = old_len-(type[a-1]+1); j < new_len; j++)
-	  cv[j] = cC[j];
+      }
+      //if (old_len >= (type[a-1]+1))
+				for (long j = max(0,old_len-(type[a-1]+1)); j < new_len; j++){
+					cout << "a: " << a << " j: " << j << endl;
+	  			cv[j] = cC[j];
+	  		}
       old_len = new_len;
       cv += type[a]+1;
     }
@@ -135,6 +143,8 @@ Vec<ZZ_p> BivariateModularComp::mult_right_Horners(const Vec<ZZ_p> &rhs){
 
 
 Vec<ZZ_p> BivariateModularComp::mult_right(const Vec<ZZ_p> &rhs){
+	//return mult_right_Horners(rhs);
+	
 	return mult_right_comp(rhs);
 }
 
@@ -145,18 +155,27 @@ Vec<ZZ_p> BivariateModularComp::mult_right_comp(const Vec<ZZ_p> &rhs){
 
   create_lhs_list(rhs_poly, rhs);
   create_lhs_matrix(A0, rhs_poly);
+  cout << "lhs: " << A0 << endl;
+  cout << "B: " << B << endl;
   mul_CRT_CTFT(A, A0, B);
+  cout << "A: " << A << endl;
   Vec<ZZ_pX> B1; // TODO: change this name!
 
   deslice(B1, A);
+  cout << "A: " << A << endl;
+  cout << "B1: " << B1 << endl;
 
   ZZ_pX p;
   p = B1[B1.length() - 1];
   ZZ_pX_poly_multiplier multF(F_field, prec);
   for (long i = B1.length()-2; i >= 0; i--){
+  	cout << "p: " << p << endl;
     multF.mul(p, p);
+    cout << "p: " << p << endl;
+    cout << "B1[i]: " << B1[i] << endl;
     p = trunc(p, prec) + B1[i];
   }
+  cout << "p: " << p << endl;
 
   Vec<ZZ_p> v;
   v.SetLength(prec);

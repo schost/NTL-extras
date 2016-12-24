@@ -133,11 +133,10 @@ hermite_pade_non_algebraic::hermite_pade_non_algebraic
   cout << mulA_right(ex) << endl;
 }
 
-
-void hermite_pade_non_algebraic::set_up_bmc(){
+mosaic_toeplitz_mul_ZZ_p *hermite_pade_non_algebraic::create_bmc(){
 	Vec<ZZ_pX> fs_p;
 	conv(fs_p, vec_fs);
-	vec_M.append(new non_algebraic_mosaic_toeplitz_mul_ZZ_p(fs_p, type, sizeX));
+	return new non_algebraic_mosaic_toeplitz_mul_ZZ_p(fs_p, type, sizeX);
 }
 
 Vec<ZZ_p> hermite_pade_non_algebraic::mul_M_right(const Vec<ZZ_p> &b){

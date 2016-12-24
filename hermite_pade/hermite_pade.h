@@ -50,7 +50,10 @@ class hermite_pade{
   // switches the field to mod p^2^n
   void switch_context(long n);
   
-  virtual void set_up_bmc() = 0;
+  void set_up_bmc();
+  
+  // returns a bmc in the current p
+  virtual mosaic_toeplitz_mul_ZZ_p *create_bmc() = 0;
 
 	void set_up_field(long fft_index);
 	
@@ -92,6 +95,8 @@ class hermite_pade{
   /* multiplies M*b                                                 */
   /*----------------------------------------------------------------*/
   virtual Vec<ZZ_p> mul_M_right(const Vec<ZZ_p> &b);
+  
+  bool check_reconstruction(const Vec<ZZ_p> &v, long n);
   
   hermite_pade(long fft_index): level{0}{
   	set_up_field(fft_index);

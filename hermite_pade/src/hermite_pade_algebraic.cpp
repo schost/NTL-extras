@@ -11,7 +11,7 @@ Vec<long> hermite_pade_algebraic::update_type(){
   if (rank + 1 == sizeY) return type;
 	switch_context(0);
 	
-	cout << "sizeY: " << sizeY << " rank: " << rank << endl;
+	cout << "sizeX: " << sizeX << " sizeY: " << sizeY << " rank: " << rank << endl;
 	
   Vec<ZZ_p> ex1; // mult with A to get a column
   ex1.SetLength(sizeY, ZZ_p(0));
@@ -51,18 +51,18 @@ Vec<long> hermite_pade_algebraic::update_type(){
   }
 	ex1 = flip_on_type(mul_Y_right(ex1));
 	ex2 = flip_on_type(mul_Y_right(ex2));
-	cout <<"ex2: " << ex2 << endl;
+	//cout <<"ex2: " << ex2 << endl;
 
 	Vec<zz_p> v1 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex1));
 	Vec<zz_p> v2 = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex2));
-	cout <<"v1: " << split_on_type(v1) << endl;
-  cout <<"v2: " << v2 << endl;
+//	cout <<"v1: " << split_on_type(v1) << endl;
+ // cout <<"v2: " << v2 << endl;
 	
 	
 	zz_pXY b1(split_on_type(v1));
 	zz_pXY b2(split_on_type(v2));
-  cout <<"v1: " << b1 << endl;
-  cout <<"v2: " << b2 << endl;
+  //cout <<"v1: " << b1 << endl;
+  //cout <<"v2: " << b2 << endl;
 	zz_pXY gcd;
 	GCD(gcd,b1,b2);
 	cout << "GCD: " << gcd << endl;
@@ -119,6 +119,7 @@ void hermite_pade_algebraic::init(const ZZX &f, const Vec<long> &type, long prec
     vec_H.append(hankel(inp_vec, prec, type[i] + 1));
     running = running * f_field;
     running /= denom_p;
+    running = trunc(running,prec);
   }
   Vec<Vec<hankel>> hankel_matrices;
   hankel_matrices.append(vec_H);
@@ -177,12 +178,12 @@ hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& ty
   init(f,type,prec_inp,fft_index);
 }
 
-void hermite_pade_algebraic::set_up_bmc(){
+mosaic_toeplitz_mul_ZZ_p *hermite_pade_algebraic::create_bmc(){
 	ZZ_pX f_p;
 	ZZ_p denom_p= conv<ZZ_p>(denom);
   conv(f_p, f_full_prec);
   f_p /= denom_p;
-  vec_M.append(new BivariateModularComp(f_p, type, sizeX));
+  return new BivariateModularComp(f_p, type, sizeX);
 }
 
 hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const ZZ &denom, const Vec<long>& type, long prec_inp, long fft_index):hermite_pade(fft_index)

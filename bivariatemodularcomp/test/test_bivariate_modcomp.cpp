@@ -34,8 +34,8 @@ void check(int opt, long k, long n, long m){
 
   if (opt == 1){
     BivariateModularComp c(f, type, prec);
-    output1 = c.mult(input);
-    output2 = c.mult_Horners(input);
+    output1 = c.mult_right(input);
+    output2 = c.mult_right_Horners(input);
     cout << n << " " << m << " " << (output1 == output2) << endl;
   }
   else{
@@ -53,12 +53,12 @@ void check(int opt, long k, long n, long m){
 
     t = GetTime();
     for (long i = 0; i < NB; i++)
-      output1 = c.mult(input);
+      output1 = c.mult_right(input);
     cout << GetTime()-t << " ";
 
     t = GetTime();
     for (long i = 0; i < NB; i++)
-      output2 = c.mult_Horners(input);
+      output2 = c.mult_right_Horners(input);
     cout << GetTime()-t << " ";
 
     cout << endl;

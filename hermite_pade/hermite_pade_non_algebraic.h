@@ -10,8 +10,8 @@ class hermite_pade_non_algebraic : public hermite_pade{
 	/* tries to increase the rank of M by adding random blocks */
 	/*---------------------------------------------------------*/
 	Vec<hankel> increase_rank(long add);
-	
-	void set_up_bmc() override;
+
+	mosaic_toeplitz_mul_ZZ_p *create_bmc() override;
 	
 	Vec<ZZ_p> mul_M_right(const NTL::Vec<NTL::ZZ_p> &) override;
 	

@@ -22,7 +22,7 @@ class hermite_pade_algebraic : public hermite_pade{
  
   Vec<zz_pX> split_on_type(const Vec<zz_p> &v);
   
-  void set_up_bmc() override;
+  mosaic_toeplitz_mul_ZZ_p *create_bmc() override;
   
   void init_bmc();
   

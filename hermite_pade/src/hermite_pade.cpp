@@ -164,8 +164,12 @@ void hermite_pade::DAC(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
   switch_context(old_n); 
 }
 
+void hermite_pade::set_up_bmc(){
+  vec_M.append(create_bmc());
+}
+
 bool hermite_pade::can_reconstruct(const Vec<ZZ_p> &v, long n){
-  if (n == 0) 
+  if (n <= 0) 
     return false;
   for (long i = 0; i < v.length(); i++){
     ZZ a,b;
@@ -189,6 +193,25 @@ void hermite_pade::reconstruct(Vec<Vec<ZZ>> &sol, const Vec<ZZ_p> &v, long n){
     temp.append(b);
     sol.append(temp);
   }
+}
+
+bool hermite_pade::check_reconstruction(const Vec<ZZ_p> &v, long n){
+	Vec<Vec<ZZ>> sol;
+	reconstruct(sol, v, n);
+	ZZ_p::init(ZZ(13));
+	Vec<ZZ_p> sol_ZZ_p;
+	for (long int i = 0; i < sol.length(); i++)
+		sol_ZZ_p.append(conv<ZZ_p>(sol[i][0])/conv<ZZ_p>(sol[i][1]));
+	auto bmc = create_bmc();
+	auto x = bmc->mult_right(flip_on_type(sol_ZZ_p));
+	cout << "x: " << x << endl;
+	cout << "sol: " << sol_ZZ_p << endl;
+	delete bmc;
+	for (long int i = 0; i < x.length(); i++)
+	  if (x[i] != ZZ_p(0)){
+	    return false;
+	  }
+	return true;
 }
 
 Vec<Vec<ZZ_p>> hermite_pade::split_on_type(const Vec<ZZ_p> &v){
@@ -227,7 +250,7 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
   Vec<ZZ_p> soln = mul_Y_right(x);
 
   // loop until we get enough prec
-  while(!can_reconstruct(soln, n)){
+  while(!(can_reconstruct(soln, n) && check_reconstruction(soln,n))){
     switch_context(++n);
     cout << "n: " << n << endl;
     
@@ -251,22 +274,23 @@ void hermite_pade::find_rand_sol(Vec<Vec<ZZ>> &sol){
         break;
       }
     soln *= first;
+    cout << "mult: " << mul_M_right(soln) << endl;
   }
   
   reconstruct(sol, soln, n);
   sol = flip_on_type(sol);
   
-  /***********************************************
+  /*
   ZZ_p::init(ZZ(13));
   Vec<ZZ_p> check;
   for (long i = 0; i < sol.length(); i++){
     check.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));	
   }
-  
+  cout << "sol: " << sol << endl;	
   cout << "check: " << mul_M_right(check) << endl;
+  */
   
   
-  ***********************************************/
   
 }
 
