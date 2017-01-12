@@ -1,0 +1,44 @@
+/*----------------------------------------------------------------*/
+/* solves for Mx = b mod p^(2^n) using Dixon's algorithm          */
+/*----------------------------------------------------------------*/
+void hermite_pade::Dixon(Vec<ZZ> &x, const Vec<ZZ> &b_in, long n){
+	// Vector of the x's
+	Vec<Vec<ZZ>> vec_x;
+
+  // computing x_0
+	zz_pContext push;
+	ctx.restore();
+	Vec<zz_p> x_zz_p;
+	Vec<zz_p> b_zz_p = conv<Vec<zz_p>>(b_in);
+
+	invA.mul_right(x_zz_p, b_zz_p);
+	vec_x.append(conv<Vec<ZZ>>(x_zz_p));
+	
+	auto old_n = level;
+	long t = power_long(2,n);
+	for (long i = 1; i < t; ++i)
+		switch_context(i);
+	switch_context(t);
+	for (long i = 1; i < t; ++i){
+		Vec<ZZ_p> b_ZZ_p = conv<Vec<ZZ_p>>(conv<Vec<ZZ>>(b_zz_p));
+		auto c_ZZ_p = mulA_right(conv<Vec<ZZ_p>>(vec_x[i-1]));
+		b_ZZ_p = b_ZZ_p - c_ZZ_p;
+		Vec<ZZ> b_ZZ = conv<Vec<ZZ>>(b_ZZ_p);
+		for (long j = 0; j < b_ZZ_p.length(); j++)
+			b_ZZ[j] = b_ZZ[j] / p;
+		b_zz_p = conv<Vec<zz_p>>(b_ZZ);
+		invA.mul_right(x_zz_p, b_zz_p);
+		vec_x.append(conv<Vec<ZZ>>(x_zz_p));
+	}
+	
+	switch_context(t);
+	Vec <ZZ_p>x_ZZ_p = conv<Vec<ZZ_p>>(vec_x[0]); // running total
+	long p_running = p;
+	for (long i = 1; i < t; i++){
+		Vec<ZZ_p> temp = conv<Vec<ZZ_p>>(vec_x[i]);
+		x_ZZ_p += p_running * temp;
+		p_running *= p_running;
+	}
+	x = conv<Vec<ZZ>>(x_ZZ_p);
+	switch_context(old_n);
+}

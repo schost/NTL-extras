@@ -1,1 +1,1 @@
-# A bunch of NTL routines
+A project implementing some structured matrices algorithms
