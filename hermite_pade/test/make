@@ -1,5 +1,0 @@
-cd ../src
-make
-cd ../test
-make utest_input
-./test_input
