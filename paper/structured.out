@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Structured linear algebra}{}% 1
+\BOOKMARK [1][-]{section.2}{Solving Cauchy-like systems}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{A faster quadratic algorithm}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{The divide-and-conquer algorithm}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Hermite-Pad\351 approximants}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Reduction to Cauchy systems}{section.3}% 6
+\BOOKMARK [1][-]{section.4}{Solving Structured Systems}{}% 7
+\BOOKMARK [2][-]{subsection.4.1}{The divide and conquer algorithm}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.2}{Dixon's algorithm}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.3}{Newton iteration}{section.4}% 10
+\BOOKMARK [1][-]{section.5}{Solving Block Toeplitz Systems}{}% 11
+\BOOKMARK [2][-]{subsection.5.1}{Systems with one dimension kernel space}{section.5}% 12
+\BOOKMARK [2][-]{subsection.5.2}{General block Toeplitz systems}{section.5}% 13
+\BOOKMARK [2][-]{subsection.5.3}{Solution to Hermite-Pad\351 approximant}{section.5}% 14
+\BOOKMARK [1][-]{section.6}{References}{}% 15

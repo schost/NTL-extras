@@ -1,0 +1,108 @@
+\begin{thebibliography}{10}
+
+\bibitem{BiAn80}
+R.~R. Bitmead and B.~D.~O. Anderson.
+\newblock Asymptotically fast solution of {T}oeplitz and related systems of
+  linear equations.
+\newblock {\em Linear Algebra Appl.}, 34:103--116, 1980.
+
+\bibitem{BoLeSc03}
+A.~Bostan, G.~Lecerf, and {\'E}.~Schost.
+\newblock Tellegen's principle into practice.
+\newblock In {\em ISSAC'03}, pages 37--44. ACM, 2003.
+
+\bibitem{BoSc05}
+A.~Bostan and {\'E}.~Schost.
+\newblock Polynomial evaluation and interpolation on special sets of points.
+\newblock {\em J. Complexity}, 21(4):420--446, 2005.
+
+\bibitem{CaKa91}
+D.~G. Cantor and E.~Kaltofen.
+\newblock On fast multiplication of polynomials over arbitrary algebras.
+\newblock {\em Acta Informatica}, 28(7):693--701, 1991.
+
+\bibitem{Cardinal99}
+{J.-P.} Cardinal.
+\newblock On a property of {C}auchy-like matrices.
+\newblock {\em C. R. Acad. Sci. Paris S\'erie I}, 388:1089--1093, 1999.
+
+\bibitem{CoWi90}
+D.~Coppersmith and S.~Winograd.
+\newblock Matrix multiplication via arithmetic progressions.
+\newblock {\em Journal of Symbolic Computation}, 9(3):251--280, March 1990.
+
+\bibitem{Durbin60}
+J.~Durbin.
+\newblock The fitting of time series models.
+\newblock {\em Rev. Inst. Int. Stat.}, 28:233--243, 1960.
+
+\bibitem{GaGe13}
+J.~\gathen{von zur} Gathen and J.~Gerhard.
+\newblock {\em Modern Computer Algebra}.
+\newblock Cambridge University Press, Cambridge, third edition, 2013.
+
+\bibitem{HaQuZi04}
+G.~Hanrot, M.~Quercia, and P.~Zimmermann.
+\newblock The {M}iddle {P}roduct {A}lgorithm,~{I}.
+\newblock {\em Appl. Algebra Engrg. Comm. Comp.}, 14(6):415--438, 2004.
+
+\bibitem{JeMo10}
+{C.-P.} Jeannerod and C.~Mouilleron.
+\newblock Computing specified generators of structured matrix inverses.
+\newblock In {\em ISSAC'10}, pages 281--288, 2010.
+
+\bibitem{KaGoOl95}
+T.~Kailath, I.~Gohberg, and V.~Olshevsky.
+\newblock Fast {G}aussian elimination with partial pivoting for matrices with
+  displacement structure.
+\newblock {\em Math. Comp.}, 64(212):1557--1576, 1995.
+
+\bibitem{KaKuMo79}
+T.~Kailath, S.~Y. Kung, and M.~Morf.
+\newblock Displacement ranks of matrices and linear equations.
+\newblock {\em J. Math. Anal. Appl.}, 68(2):395--407, 1979.
+
+\bibitem{KaSa99}
+T.~Kailath and {A. H.} Sayed.
+\newblock {\em Fast Reliable Algorithms for Matrices with Structure}.
+\newblock SIAM, 1999.
+
+\bibitem{Kaltofen94}
+E.~Kaltofen.
+\newblock Asymptotically fast solution of {T}oeplitz-like singular linear
+  systems.
+\newblock In {\em ISSAC'94}, pages 297--304. ACM, 1994.
+
+\bibitem{LeGall14}
+F.~Le~Gall.
+\newblock Powers of tensors and fast matrix multiplication.
+\newblock In {\em ISSAC'14}, pages 296--303. ACM, 2014.
+
+\bibitem{Levinson47}
+N.~Levinson.
+\newblock The {W}iener {RMS} error criterion in filter design and prediction.
+\newblock {\em J. Math. Phys.}, 25:261--278, 1947.
+
+\bibitem{Morf80}
+M.~Morf.
+\newblock Doubling algorithms for toeplitz and related equations.
+\newblock In {\em IEEE Conference on Acoustics, Speech, and Signal Processing},
+  pages 954--959, 1980.
+
+\bibitem{Mouilleron08}
+C.~Mouilleron.
+\newblock Algorithmes rapides pour la r\'esolution de probl\`emes alg\'ebriques
+  structur\'es.
+\newblock Master's thesis, ENS Lyon, 2008.
+
+\bibitem{Pan01}
+V.~Y. Pan.
+\newblock {\em Structured Matrices and Polynomials}.
+\newblock Birkh\"auser Boston Inc., 2001.
+
+\bibitem{Trench64}
+W.~F. Trench.
+\newblock An algorithm for the inversion of finite {T}oeplitz matrices.
+\newblock {\em J. Soc. Indust. Appl. Math.}, 12:515--522, 1964.
+
+\end{thebibliography}

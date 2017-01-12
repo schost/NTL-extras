@@ -1,0 +1,710 @@
+\documentclass{sig-alternate}
+
+\usepackage{bm}
+\usepackage{mathrsfs}
+\usepackage{enumerate}
+\usepackage[colorlinks=true,linkcolor=cyan]{hyperref}
+
+\numberofauthors{1}
+\author{
+\alignauthor
+bla
+\affaddr{blu} \\
+\affaddr{bli}
+\email{blo@ble}
+}
+
+\newcommand{\ve}{\ensuremath{\mathsf{e}}}
+\newcommand{\vf}{\ensuremath{\mathsf{f}}}
+\newcommand{\vg}{\ensuremath{\mathsf{g}}}
+\newcommand{\vh}{\ensuremath{\mathsf{h}}}
+\newcommand{\vu}{\ensuremath{\mathsf{u}}}
+\newcommand{\vv}{\ensuremath{\mathsf{v}}}
+
+\newcommand{\mA}{\ensuremath{\mathsf{A}}}
+\newcommand{\mB}{\ensuremath{\mathsf{B}}}
+\newcommand{\mC}{\ensuremath{\mathsf{C}}}
+\newcommand{\mD}{\ensuremath{\mathsf{D}}}
+\newcommand{\mG}{\ensuremath{\mathsf{G}}}
+\newcommand{\mH}{\ensuremath{\mathsf{H}}}
+\newcommand{\mJ}{\ensuremath{\mathsf{J}}}
+\newcommand{\mM}{\ensuremath{\mathsf{M}}}
+\newcommand{\mN}{\ensuremath{\mathsf{N}}}
+\newcommand{\mS}{\ensuremath{\mathsf{S}}}
+\newcommand{\mX}{\ensuremath{\mathsf{X}}}
+\newcommand{\mY}{\ensuremath{\mathsf{Y}}}
+\newcommand{\mZ}{\ensuremath{\mathsf{Z}}}
+
+\newcommand{\K}{\ensuremath{\mathbb{K}}}
+
+\newcommand{\M}{\ensuremath{\mathscr{M}}}
+
+\DeclareBoldMathCommand{\bF}{F}
+\DeclareBoldMathCommand{\bh}{h}
+\DeclareBoldMathCommand{\bu}{u}
+\DeclareBoldMathCommand{\bx}{x}
+\DeclareBoldMathCommand{\by}{y}
+
+\newcommand{\Otilde}[1]{\ensuremath{O\tilde{~}(#1)}} % soft O for complexity
+\newcommand{\todo}[1]{(\textbf{todo:} #1)} 
+\newcommand{\why}{\textbf{why?}} 
+
+\newtheorem{pbm}{Problem}
+\renewcommand{\thepbm}{\Alph{pbm}} % "letter-numbered" theorems
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{algo}{Algorithm}
+
+\def\gathen#1{{#1}}
+
+
+\title{Using structured linear algebra to compute Hermite-Pad\'e
+approximants}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+bla bla
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+In all this paper, we let $\M$ be such that over any ring, polynomials
+of degree at most $d$ can be multiplied in $\M(d)$ base ring
+operations; we also assume that the super-linearity assumptions
+of~\cite[Chapter~8]{GaGe13}. Using the Cantor-Kaltofen
+algorithm~\cite{CaKa91}, we can take $\M(d)\in O(d
+\log(d)\log\log(d))$. We let $\omega$ be a feasible exponent for
+linear algebra, in the sense that matrices of size $n$ can be
+multiplied in $O(n^\omega)$ base ring operations over any ring; the
+best bound to date is $\omega < 2.38$~\cite{CoWi90, LeGall14}. The
+notation $\Otilde{\,}$ indicates that we omit polylogarithmic terms.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Structured linear algebra}
+
+This section reviews background material on structured
+matrices. Initially developed by \cite{KaKuMo79}, the {\it
+  displacement operator} approach represents a matrix $\mA$ by its
+displacement $\phi(\mA)$, that is, the image of $\mA$ under a
+\textit{displacement operator}~$\phi$.  Then, we say that $\mA$ is
+structured with respect to $\phi$ if $\phi(\mA)$ has a small rank
+compared to its size; the rank of $\phi(\mA)$ is called the
+\textit{displacement rank} of $\mA$ with respect to $\phi$.
+
+The key idea of most algorithms for structured matrices is summarized
+by Pan's motto: compress, operate, decompress. Indeed, for $\mA$ of
+size $m \times n$, if $\phi(\mA)$ has rank~$\alpha$, it can be
+represented using few elements through {\it generators}, that is, two
+matrices $(\mG,\mH)$ in $\K^{m\times \alpha} \times \K^{n\times
+  \alpha}$, with $\phi(\mA) = \mG \mH^t$ (here, $\K$ is our base
+field).  The main idea behind algorithms for structured matrices is to
+use such generators as a compact data structure, involving $\alpha
+(m+n)$ field elements instead of $mn$.
+
+The most famous structures that support such an approach are the
+Toeplitz, Hankel, Vandermonde and Cauchy structures. While the case of
+Toeplitz-like matrices was the first one to be studied in detail, we
+will focus on Cauchy-like matrices, as they are arguably more
+convenient to work with.
+
+%% In this section, we focus of so-called {\em Sylvester} displacement
+%% operators, of the form $\mA \mapsto \mM \mA - \mA \mN$, for some fixed
+%% matrices $\mM$ and $\mN$ in respectively $\K^{m\times m}$ and
+%% $\K^{n\times n}$.  For $\varphi$ in $\K$, define the cyclic down-shift
+%% matrix of size $m$ \begin{equation} \label{eq:Z_m_phi}
+%%   \mZ_{m,\varphi}= \begin{bmatrix} & & & \varphi\\ 1 & \\ &\ddots &
+%%     \\ & & 1 & \end{bmatrix} \in\K^{m\times m}.  \end{equation} Then,
+%% a matrix $\mA \in \K^{m \times n}$ is called Toeplitz-like if
+%% $T_{m,n,\varphi,\psi}(\mA)=\mZ_{m,\varphi} \, \mA - \mA\, \mZ_{n,\psi}$ has
+%% small rank.
+
+For a sequence $\vu=(u_1,\dots,u_m)$ in $\K^m$, let $\mD_u \in
+\K^{m\times m}$ be the diagonal matrix with diagonal entries
+$u_1,\dots,u_m$. Then, given $\vu$ as above and $\vv$ in $\K^n$, we will
+consider the operator $\nabla_{\vu,\vv}: \mA \in \K^{m\times n} \mapsto \mD_u
+\mA - \mA \mD_v$; {\em Cauchy-like} matrices (with respect to the
+choice of $\vu$ and $\vv$) are those matrices $\mA$ for which
+$\nabla_{\vu,\vv}(\mA)$ has small rank.
+
+Let $u,v$ be given and suppose that $u_i \ne v_j$ holds for all
+$i,j$. Then, the operator $\nabla_{\vu,\vv}$ is invertible: given
+generators $(\mG,\mH)$ of length $\alpha$ for $\mA$, with respect to
+the operator $\nabla_{\vu,\vv}$, we can reconstruct $\mA$ as
+\begin{equation}\label{eq:recA}
+\mA = \sum_{1 \le i \le \alpha}
+\mD_{\vg_i} 
+\mC_{\vu,\vv}\,\mD_{\vh_i},\ \ \text{with}\ \ 
+\mC_{\vu,\vv}=\begin{bmatrix}
+\frac 1{u_1-v_1} & \cdots & \frac 1{u_1-v_n}\\
+\vdots & & \vdots \\
+\frac 1{u_m-v_1} & \cdots & \frac 1{u_m-v_n}
+\end{bmatrix}, 
+\end{equation}
+where $\vg_i$ and $\vh_i$ are the $i$th columns of respectively $\mG$
+and~$\mH$. The matrix $\mC_{\vu,\vv}$ is known as a {\em Cauchy
+  matrix}. Using fast polynomial evaluation and interpolation, we can
+multiply $\mC_{\vu,\vv}$ by a vector in time
+$O(\M(m)\log(m)+\M(n)\log(n))$, so that we can multiply $\mA$ by a
+vector in quasi-linear time $O(\alpha( \M(m)\log(m) +
+\M(n)\log(n)))\subset \Otilde{\alpha (m+n)}$. Remark that we can
+equivalently rewrite $\mA$ as
+\begin{equation}\label{eq:recA2}
+\mA= (\mG \mH^t) \odot \mC_{\vu,\vv},
+\end{equation}
+where $\odot$ denotes the entrywise product.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Solving Cauchy-like systems}
+
+If a matrix $\mA \in \K^{n\times n}$ is invertible, and is structured
+with respect to an operator $\nabla_{\vu,\vv}$, it is known that its inverse is
+structured with respect to $\nabla_{v,u}$. Indeed, if $\mD_u \mA -
+\mA \mD_v = \mG \mH^t$, one easily deduces that $\mD_v \mA^{-1} -
+\mA^{-1} \mD_u = - (\mA^{-1} \mG)  (\mA^{-t} \mH)^t$.
+
+For the main question in this section, we will not assume that $\mA$
+is invertible. We will however suppose that is has {\em generic rank
+profile}, that is, that its leading principal minors of size up to
+${\rm rank}(\mA)$ are invertible. As we will see below, this is an
+assumption which can be ensured by a random precondionning. 
+We can then state the main question of this section; remark that the 
+assumptions on the vectors $u,v$ are slightly stronger than the one 
+required for $\nabla_{\vu,\vv}$ to be invertible.
+\begin{pbm}\label{pb:cauchy}
+  Consider vectors $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$, with
+  $u_i \ne v_j$, $u_i \ne u_{i'}$, $v_j \ne v_{j'}$ for all
+  $i,i',j,j'$.  Given $\nabla_{\vu,\vv}$-generators of length $\alpha$ for
+  a matrix $\mA$ in $\K^{m \times n}$, with $\alpha \le \min(m,n)$, do
+  the following:
+  \begin{itemize}
+  \item if $\mA$ does not have generic rank profile, raise an error,
+  \item else, return $\nabla_{\vv',\vu'}$-generators for the inverse of the
+    leading principal minor of $\mA$, with $\vv'=(v_1,\dots,v_r)$ and
+    $\vu'=(u_1,\dots,u_r)$, where $r={\rm rank}(\mA)$.
+\end{itemize}
+\end{pbm}
+There exist two classes of algorithms for handling such problems:
+iterative ones, of cost that grows like $mn$, and algorithms using
+divide-and-conquer techniques, of quasi-linear cost in $m+n$. In the
+following subsections, we review these algorithms and detail several
+improvements; we then present our implementation and its performance.
+
+
+We will have to handle submatrices of $\mA$ through their
+generators. The fact that $\mD_{\vu}$ and $\mD_{\vv}$ are diagonal matrices
+makes this easy (this is one of the aspects in which the Cauchy
+structure behaves more simply than the Toeplitz one).  Suppose that
+$(\mG,\mH)$ are generators for $\mA$, with respect to the operator
+$\nabla_{\vu,\vv}$, and let $\vu_I=(u_i)_{i \in I}$ and $\vv_J=(v_j)_{j \in
+  J}$ be subsequences of respectively $\vu$ and $\vv$, corresponding to
+entries of indices $I$ and $J$. Let $\mA_{I,J}$ be the submatrix of
+$\mA$ obtained by keeping rows and columns of indices respectively in
+$I$ and $J$, and let $(\mG_I,\mH_J)$ be the matrices obtained from
+$(\mG,\mH)$ by respectively keeping rows of $\mG$ of indices in $I$,
+and rows of $\mH$ of indices in $J$. Then, $(\mG_I,\mH_J)$ is a
+$\nabla_{\vu_I,\vv_J}$-generator for $\mA_{I,J}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{A faster quadratic algorithm}
+
+Iterative algorithms that solve a size $n$ Toeplitz system in time
+$O(n^2)$ have been known for
+decades~\cite{Levinson47,Durbin60,Trench64}; several extensions to
+more general structured matrices were later given, as for instance
+in~\cite{KaGoOl95}; see~\cite{Pan01} for more references. For the
+particular form of our Problem~\ref{pb:cauchy}, we give here an
+algorithm inspired by~\cite[Algorithme~4]{Mouilleron08}. In this
+reference, Mouilleron gives (without a proof) an algorithm that solves
+Problem~\ref{pb:cauchy} in time $O(\alpha n^2)$, in the case where
+$m=n$ and $\mA$ is invertible (but without the rank profile
+assumption). He credits the origin of this algorithm to
+Kailath~\cite[\S1.10]{KaSa99}, who dealt with symmetric matrices.
+
+Even though we will discuss quasi-linear algorithms in the next
+section, we stress that having a fast quadratic-time algorithm is
+actually crucial in practice: as is the case for the HGCD, fast linear
+algebra algorithms, etc, the quasi-linear algorithm will fall back on
+the quadratic one for input sizes under a certain threshold, and the
+performance of the latter will be an important factor in the overall
+runtime.
+With this in mind, we introduce in this subsection an algorithm
+inspired by~\cite{Mouilleron08} that solves Problem~\ref{pb:cauchy}
+with the slightly better runtime $O(\alpha^{\omega-2} mn)$. 
+
+Let 
+$(\mG,\mH) \in \K^{m\times \alpha} \times \K^{n\times \alpha}$ be
+$\nabla_{\vu,\vv}$-generators of a matrix $\mA$ with respect to the operator
+$\nabla_{\vu,\vv}$, with $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$. Let
+further $r$ be the rank of $\mA$. Our goal is to decide if $\mA$ has
+generic rank profile, and if so, to return generators $(\mY,\mZ) \in
+\K^{r\times \alpha} \times \K^{r\times \alpha}$ of the inverse of the
+leading principal minor of $\mA$.
+
+
+Let $p=\min(m,n)$. For $i$ in $\{0,\dots,p\}$, write $\mA$ as
+$$\mA=\left [\begin{matrix} {\mA^{(i)}_{0,0}} & \mA^{(i)}_{0,1} \\[1mm] \mA^{(i)}_{1,0} & \mA^{(i)}_{1,1}
+\end{matrix}\right ].$$ 
+If the principal minor
+ ${\mA^{(i)}_{0,0}}$  is invertible, we define as in~\cite{Cardinal99}
+$$\mS^{(i)} = \left [\begin{matrix} {\mA^{(i)}_{0,0}}{}^{-1} & -{\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1} \\[1mm] \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1}& \mA^{(i)}_{1,1} - \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1} 
+\end{matrix}\right ].$$
+We next write the decompositions $\mG=\left [\begin{matrix}
+    \mG^{(i)}_0 \\    \mG^{(i)}_1 
+  \end{matrix}\right ]$, $\mH=\left [\begin{matrix} 
+        \mH^{(i)}_0 \\    \mH^{(i)}_1 
+  \end{matrix}\right ],$
+with $\mG^{(i)}_0$ and $\mH^{(i)}_0$ of size $i \times \alpha$
+and
+we define
+\begin{equation}
+\mY^{(i)}
+ = \left [\begin{matrix}
+  \mY^{(i)}_0 \\    \mY^{(i)}_1 
+     \end{matrix} \right ],\quad
+\mZ^{(i)}
+ = \left [\begin{matrix}
+  \mZ^{(i)}_0 \\    \mZ^{(i)}_1 
+     \end{matrix} \right ],
+\end{equation}
+with
+\begin{align}
+\mY^{(i)}_0&= -{\mA^{(i)}_{0,0}}{}^{-1} \mG^{(i)}_0,\  
+&\mY^{(i)}_1&=-\mA^{(i)}_{1,0}{\mA^{(i)}_{0,0}}{}^{-1}\mG^{(i)}_0 + \mG^{(i)}_0,\label{eq:defYi}\\
+\mZ^{(i)}_0&= {\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_0,\  
+&\mZ^{(i)}_1&=-{\mA^{(i)}_{0,1}}{}^t{\mA^{(i)}_{0,0}}{}^{-t}\mH^{(i)}_0 + \mH^{(i)}_1\label{eq:defZi}.
+\end{align}
+Given integers $a,b$, $\vu_{a:b}$ denotes the sequence
+$(u_a,\dots,u_b)$ (and similarly for $\vv_{a:b}$); we then
+define $\ve^{(i)}=(\vv_{1:i},\vu_{[i+1:m})$ and
+$\vf^{(i)}=(\vu_{1:i},\vv_{i+1:n})$.
+Then, a key result for the sequel is the following, which
+is~\cite[Proposition~1]{Cardinal99}; remark that the operator $\nabla_{\ve^{(i)},\vf^{(i)}}$
+is invertible, in view of our assumption on $\vu$ and $\vv$.
+\begin{lemma}\label{lemma:cpj-cm}
+ $(\mY^{(i)},\mZ^{(i)})$ are $\nabla_{\ve^{(i)},\vf^{(i)}}$-generators for $\mS^{(i)}$.
+\end{lemma}
+For $i=0$, we simply have $\mS^{(0)}=\mA$ and
+$(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$.  If $\mA$ has generic rank profile,
+then the above lemma shows that for $i=r$, $(\mY^{(r)}_0,\mZ^{(r)}_0)$
+are $\nabla_{\vv',\vu'}$-generators for ${\mA^{(r)}_{0,0}}{}^{-1}$,
+for $\vu',\vv'$ as in Problem~\ref{pb:cauchy}, so they solve our
+problem.  These facts will allow us to devise an iterative algorithm
+that starts from $(\mY^{(0)},\mZ^{(0)})$ and computes
+$(\mY^{(i_1)},\mZ^{(i_1)})$, $(\mY^{(i_2)},\mZ^{(i_2)})$, \dots for
+some sequence of indices $0 < i_1 < i_2 < \dots$, until we finally
+reach $(\mY^{(r)},\mZ^{(r)})$, on which we read off our output; if
+$\mA$ does not have generic rank profile, we will detect it. The basis
+of the algorithm is Lemma~\ref{lemma:update} below, which uses the
+following notation.
+
+Let $i,j$ be non-negative integers with $0
+\le i+j \le p$, and ${\mA^{(i)}_{0,0}}$ invertible. Write a block decomposition of $\mS^{(i)}$
+as
+\begin{equation}\label{eq:Siblock}
+\mS^{(i)} = \left [ \begin{matrix} 
+\mS^{(i,j)}_{0,0} & \mS^{(i,j)}_{0,1} & \mS^{(i,j)}_{0,2}\\
+\mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}\\
+\mS^{(i,j)}_{2,0} & \mS^{(i,j)}_{2,1} & \mS^{(i,j)}_{2,2}
+    \end{matrix}\right ],  
+\end{equation}
+with $\mS^{(i,j)}_{0,0}={\mA^{(i)}_{0,0}}{}^{-1}$ of size $i \times i$ and $\mS^{(i,j)}_{1,1}$
+of size $j \times j$ (from this, the sizes of all blocks can
+be deduced).  Similarly, we can refine our decompositions of $\mY^{(i)}$ and $\mZ^{(i)}$ as
+$$\mY^{(i)}
+ = \left [\begin{matrix}
+\mY^{(i)}_0 \\\mY^{(i,j)}_1 \\\mY^{(i,j)}_2
+   \end{matrix}\right ], \quad
+\mZ^{(i)}
+ = \left [\begin{matrix}
+\mZ^{(i)}_0 \\\mZ^{(i,j)}_1 \\\mZ^{(i,j)}_2
+   \end{matrix}\right ],$$
+with $\mY^{(i,j)}_1$ and $\mZ^{(i,j)}_2$ of size $j \times \alpha$.
+
+\begin{lemma}\label{lemma:update}
+  $\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if
+  $\mS^{(i,j)}_{1,1}$ does, and ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm
+    rank}(\mS^{(i,j)}_{1,1})$.  If these matrices are invertible, we
+  have the equalities
+$$\mY^{(i+j)} =\left [ \begin{matrix}
+\mY^{(i)}_0 -  \mS^{(i,j)}_{0,1} \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
+- \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
+\mY^{(i,j)}_2 - \mS^{(i,j)}_{2,1} \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1
+  \end{matrix}\right ]$$
+and
+$$
+\mZ^{(i+j)} =\left [ \begin{matrix} 
+\mZ^{(i)}_0 - \mS^{(i,j)}_{1,0}{}^t \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
+ \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
+\mZ^{(i,j)}_2 - \mS^{(i,j)}_{1,2}{}^t \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1
+  \end{matrix}\right ].$$
+\end{lemma}
+\begin{proof}
+  By construction, $\mS^{(i,j)}_{1,1}$ is the Schur complement of ${\mA^{(i)}_{0,0}}$,
+  seen as a submatrix of $\mA^{(i+j)}_{0,0}$; this proves our first claim. From the definition of
+  $\mS^{(i)}$ in~\eqref{eq:Siblock}, a direct calculation shows that $\mS_{i+j}$
+  is given by
+$$\mS_{i+j} = \left [ \begin{matrix} 
+\mJ^{(i,j)}_{0,0} &
+         \mS^{(i,j)}_{0,1}\mS^{(i,j)}_{1,1}{}^{-1} &
+         \mJ^{(i,j)}_{0,2} \\
+-\mS^{(i,j)}_{1,1}{}^{-1}\mS^{(i,j)}_{1,0} & 
+         \mS^{(i,j)}_{1,1}{}^{-1} &
+        -\mS^{(i,j)}_{1,1}{}^{-1} \mS^{(i,j)}_{1,2}\\ 
+\mJ^{(i,j)}_{2,0} &
+         \mS^{(i,j)}_{1,1}{}^{-1}\mS^{(i,j)}_{2,1} & 
+\mJ^{(i,j)}_{2,0} 
+    \end{matrix}\right ],$$
+with $\mJ^{(i,j)}_{a,b}=\mS^{(i,j)}_{a,b} -\mS^{(i,j)}_{a,1} \mS^{(i,j)}_{1,1}{}^{-1}\mS^{(i,j)}_{1,b}$
+for all $a,b$.
+In other words, up to permuting the first two blocks of rows, and the
+first two blocks of columns, $\mS^{(i+j)}$ is derived from $\mS^{(i)}$ in
+the same manner that $\mS^{(i)}$ is derived from $\mA$. We may thus apply
+the rule that we used in Lemma~\ref{lemma:cpj-cm} to derive
+$(\mY^{(i)},\mZ^{(i)})$ from $(\mG,\mH)$ in order to derive
+$(\mY^{(i+j)},\mZ^{(i+j)})$ from $(\mY^{(i)},\mZ^{(i)})$.  Taking into account the
+permutations we applied, we obtain the formulas given above.
+\end{proof}
+
+We can then describe the basic iterative step of our algorithm; we
+will use a step size $\beta \in \{1,\dots,\alpha\}$, given as a
+parameter.  Suppose that we have found that ${\mA^{(i)}_{0,0}}$ has rank $i$, with
+generic rank profile, and that we have computed $(\mY^{(i)},\mZ^{(i)})$, for
+some index $i$ in $\{0,\dots,p\}$.
+
+\smallskip{\noindent \bf 0.} If $i=p$, return $(\mY^{(p)}_0,\mZ^{(p)}_0)$.
+
+\smallskip{\noindent \bf 1.} Let $j=\min(\beta, p-i) \ge 1$, and
+compute the matrices $\mS^{(i,j)}_{1,0}$, $\mS^{(i,j)}_{1,1}$,
+$\mS^{(i,j)}_{1,2}$, $\mS^{(i,j)}_{0,1}$ and $\mS^{(i,j)}_{0,2}$
+of~\eqref{eq:Siblock}. Since $(\mY^{(i)},\mZ^{(i)})$ are
+$\nabla_{\ve^{(i)},\vf^{(i)}}$-generators of $\mS^{(i)}$,  $(\mY^{(i,j)}_1,\mZ^{(i)})$ and $(\mY^{(i)},\mZ^{(i,j)}_1)$ are
+respectively $\nabla_{\vu_{i+1:i+j}, \vf^{(i)}}$-generators and
+$\nabla_{\ve^{(i)},\vv_{i+1:i+j}}$-generators of its submatrices
+$$\begin{bmatrix}\mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}\end{bmatrix} \quad\text{and}\quad
+\begin{bmatrix} \mS^{(i,j)}_{0,1}\\ \mS^{(i,j)}_{1,1}\\ \mS^{(i,j)}_{2,1}
+\end{bmatrix}.$$ Using block matrix multiplication in
+Eq.~\eqref{eq:recA2}, since $j \le \beta \le \alpha$, we see that we can
+recover all these matrices in time $O(\beta^{\omega-2} \alpha (m+n))$.
+
+\smallskip{\noindent \bf 2.} If $\mS^{(i,j)}_{1,1}$ does not have generic
+rank profile, raise an error. Else, compute its rank $\rho$. This
+costs $O(\beta^\omega)$.
+
+\smallskip{\noindent \bf 3.} If $\rho=j$, $\mA^{(i+j)}_{0,0}$ has generic
+rank profile and rank $i+j$. Compute $(\mY^{(i+j)},\mZ^{(i+j)})$ by means
+of Lemma~\ref{lemma:update} and re-enter Step~{\bf 0} with index
+$i+j$. To compute $\mY^{(i+j)}$, we first compute 
+$ \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ in time $O(\beta^{\omega-1} \alpha)$;
+then all other operations take time $O(\beta^{\omega-2} \alpha m)$.
+Similarly, computing $\mZ^{(i+j)}$ takes time $O(\beta^{\omega-2} \alpha n)$.
+
+\smallskip{\noindent \bf 4.} If $\rho < j$,  $\mA^{(i+\rho)}_{0,0}$
+has generic rank profile and rank $i+\rho$, but  $\mA^{(i+\rho+1)}_{0,0}$
+still has rank $i+\rho$. Thus, either $\mA$ has rank $i+\rho$, in
+which case we are done, or it has rank greater than $i+\rho$, in which
+case it does not have generic rank profile.
+
+As a result, we go over Step {\bf 1} again, with index $\rho$ instead
+of $j$, and we now deduce the generators
+$(\mY^{(i+\rho)},\mZ^{(i+\rho)})$, as we did in the previous item (the
+cost remains of the same order).  This allows us to write down 
+$\mS^{(i+\rho)}$, on which we can read off the Schur complement
+$\mA^{(i+\rho)}_{1,1} - \mA^{(i+\rho)}_{1,0} \mA^{(i+\rho)}_{0,0}{}^{-1}
+\mA^{(i+\rho)}_{0,1}$.  If it vanishes, we return
+$(\mY^{(i+\rho)}_0,\mZ^{(i+\rho)}_{0})$; else, we raise an error. Computing
+$\mS^{(i+\rho)}$ from its
+$\nabla_{\ve^{(i+\rho)},\vf^{(i+\rho)}}$-generators
+$(\mY^{(i+\rho)},\mZ^{(i+\rho)})$ is done by means of~\eqref{eq:recA2},
+using block matrix multiplication, with a cost 
+$O(\alpha^{\omega-2} mn)$.
+
+\medskip
+
+The cost of Steps {\bf 0}-{\bf 3} is $O(\beta^{\omega-2} \alpha
+(m+n))$; we enter these steps $O(p/\beta)$ times, for a total cost of
+$O(\beta^{\omega-3} \alpha p(m+n))$, which is $O(\beta^{\omega-3}
+\alpha mn)$. This dominates the cost of Step {\bf 4} (which we enter
+once, at most), so that the whole running time is $O(\beta^{\omega-3}
+\alpha mn)$. The algorithm of~\cite{Mouilleron08} uses $\beta=1$, for
+which the cost is $O(\alpha mn)$; choosing $\beta=\alpha$, we benefit
+from fast matrix multiplication, as the cost drops to
+$O(\alpha^{\omega-2} mn)$, as claimed previously.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{The divide-and-conquer algorithm}
+
+We now review the divide-and-conquer approach to solving
+Problem~\ref{pb:cauchy}, and discuss a constant factor improvement for
+the case of certain Cauchy-like matrices. 
+
+Kaltofen~\cite{Kaltofen94} gave a divide-and-conquer algorithm that
+solves the analogue of Problem~\ref{pb:cauchy} for Toeplitz-like
+matrices, lifting assumptions needed in the original Morf and
+Bitmead-Anderson algorithm~\cite{Morf80,BiAn80}; a generalization of
+his algorithm to most usual structures is in~\cite{Pan01}. We based
+our implementation on a further improvement due to Jeannerod and
+Mouilleron~\cite{JeMo10}, which follows Cardinal's
+work~\cite{Cardinal99}: in a nutshell, it allows us to bypass
+costly ``compression'' stages that were needed in Kaltofen's
+algorithm, by predicting the shape of the generators we have to
+compute.
+
+Let $\mA,\mG,\mH,p,r$ be as in the previous subsection, and for $i$ in
+$\{0,\dots,p\}$, define
+${\mA^{(i)}_{0,0}},\mA^{(i)}_{0,1},\mA^{(i)}_{1,0},\mA^{(i)}_{1,1},\dots$ as before.
+The algorithm will compute the rank $r$ of $\mA$, together with
+specific generators for the inverse of the leading principal minor
+$\mA_{r,0,0}$, namely $\mY^{(r)}_0=-\mA^{(r)}_{0,0}{}^{-1} \mG^{(r)}_0$ and
+  $\mZ^{(r)}_0=\mA^{(r)}_{0,0}{}^{-t}\mH^{(r)}_0$, as did the algorithm in the
+  previous subsection.
+
+We choose $i$ in $\{0,\dots,p\}$, and we proceed as follows,
+essentially following~\cite{JeMo10} (with the minor difference that do
+not assume $\mA$ invertible, and that we explicitly check if $\mA$
+satisfies the generic rank profile assumption). 
+
+\smallskip\noindent{\bf 0.} If $i$ is less than a certain fixed threshold, return the
+output of the algorithm of the previous section.
+
+\smallskip\noindent{\bf 1.} Call the algorithm recursively for the
+submatrix ${\mA^{(i)}_{0,0}}$, given by its
+$\nabla_{\vu_{1:i},\vv_{1:i}}$-generators
+$(\mG^{(i)}_0,\mH^{(i)}_0)$. This will raise an error if
+${\mA^{(i)}_{0,0}}$ does not have generic rank profile, so we assume
+we are not in that case, and that we know $\rho={\rm
+  rank}({\mA^{(i)}_{0,0}})$, $\mY^{(\rho)}_0=-\mA^{(\rho)}_{0,0}{}^{-1}
+\mG^{(\rho)}_0$ and $\mZ^{(\rho)}_0=\mA^{(\rho)}_{0,0}{}^{-t}\mH^{(\rho)}_0$.
+
+\smallskip\noindent{\bf 2.} Compute $(\mY^{(\rho)}_1,\mZ^{(\rho)}_1)$
+using~\eqref{eq:defYi} and~\eqref{eq:defZi}. The dominant cost is that
+of computing the products $\mA^{(\rho)}_{1,0} \mY^{(\rho)}_0$ and
+$\mA^{(\rho)}_{0,1}{}^t \mZ^{(\rho)}_0$, given the
+$\nabla_{\vu_{\rho+1:m},\vv_{1:\rho}}$-generators
+$(\mG^{(\rho)}_1,\mH^{(\rho)}_0)$ of $\mA^{(\rho)}_{1,0}$, and the
+$\nabla_{\vu_{1:\rho},\vv_{\rho+1:n}}$-generators
+$(\mG^{(\rho)}_0,\mH^{(\rho)}_1)$ of $\mA^{(\rho)}_{0,1}$.  We examine this cost
+below.
+
+\smallskip\noindent{\bf 3.} If $\rho < i$, test whether the Schur
+complement $ \mA^{(\rho)}_{1,1} - \mA^{(\rho)}_{1,0} \mA^{(\rho)}_{0,0}{}^{-1} \mA^{(\rho)}_{0,1}$ vanishes, or
+equivalently whether $\mY^{(\rho)}_1\,
+\mZ^{(\rho)}_1{}^t = 0$: if so, return $(\mY^{(\rho)}_0,\mZ^{(\rho)}_0)$; else,
+raise an error. This is done by finding a minimal set of
+independent rows in $\mZ^{(\rho)}_1$ (this takes time $O(\alpha^{\omega-1}
+n)$) and multiplying their transposes  by ${\mY^{(\rho)}_1}$ (there are at most
+$\alpha$ such rows, so this takes time $O(\alpha^{\omega-1} n)$ as
+well).
+
+\smallskip\noindent{\bf 4.} If $\rho=i$, call the algorithm
+recursively for the Schur complement $\mA^{(i)}_{1,1} -
+\mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}^{-1} \mA^{(i)}_{0,1}$, given by its
+$\nabla_{\vu_{i+1:m},\vv_{i+1:n}}$-generators
+$(\mY^{(i)}_1,\mZ^{(i)}_1)$. This will raise an error if $\mA$ does
+not have generic rank profile. Else, we obtain the rank $\sigma$ of the
+Schur complement, as well as
+$\nabla_{\vv_{i+1:i+\sigma},\vu_{i+1:i+\sigma}}$-generators for its
+leading principal minor; with our notation, they are
+$-\mS^{(i,\sigma)}_{1,1}{}^{-1} \mY^{(i,\sigma)}_1$ and
+$\mS^{(i,\sigma)}_{1,1}{}^{-t} \mZ^{(i,\sigma)}_1$.  
+
+\smallskip\noindent{\bf 5.}  We compute and return
+$(\mY^{(i+\sigma)}_0,\mZ^{(i+\sigma)}_0)$ using the formulas of
+Lemma~\ref{lemma:update}.  This is done by multiplying the above
+matrices by respectively $\mS^{(i,\sigma)}_{0,1}$, given through its
+$\nabla_{\vu_{i+1:i+\sigma},\vu_{1:i}}$-generator
+$(\mY^{(i)}_0,\mZ^{(i,\sigma)}_{1})$, and
+$\mS^{(i,\sigma)}_{1,0}{}^t$, given by its
+$\nabla_{\vv_{1:i},\vv_{i+1:i+\sigma}}$-genera\-tor
+$(\mY^{(i,\sigma)}_1,\mZ^{(i)}_0)$.
+
+\medskip
+
+The bottleneck in this algorithm, at Steps~{\bf 2} and~{\bf 4}, is the
+multiplication of a Cauchy-like matrix of size roughly $m \times n$,
+given by generators of lengh $\alpha$, by $\alpha$ vectors, either on
+the left or on the right. We saw that {\em one} such matrix-vector
+product can be done in time $O(\alpha \M(p')\log(p'))$, with
+$p'=\max(m,n)$, so computing $\alpha$ such products directly takes
+time $O(\alpha^2 \M(p')\log(p'))$. We conclude by discussing our
+strategies to improve this cost.
+
+A first improvement lies in the choice of $\vu$ and
+$\vv$. In~\cite[Theorem~4.7.3]{Pan01}, Pan shows that if the entries
+of both $\vu$ and $\vv$ are in {\em geometric progression}, one can
+reduce the cost of the matrix-vector multiplication by any of the
+matrices used above to $O(\alpha \M(p'))$. Indeed, the underlying
+algorithm involves $\alpha$ interpolations of polynomials at the
+points $\vv$, and $\alpha$ evaluations of polynomials of degree less
+than $m$ at the points $\vu$, which can be done in respective times
+$O(\M(n))$ and $O(\M(m))$ when both $\vu$ and $\vv$ represent points
+in geometric progression.
+
+Our implementation relies on a further refinement of this idea, that
+allows us to save constant factors in runtime: we require that $\vu$
+and $\vv$ be geometric progressions with {\em the same ratio}
+$\tau$. Then, the cauchy matrix $\mC_{\vu,\vv}$ of~\eqref{eq:recA} has
+entries $1/(u_i - v_j) = 1/(u_1 \tau^{i-1} - v_1 \tau^{j-1})$, so it
+can be factored as
+$$\mC_{\vu,\vv}=\mD_\tau
+\begin{bmatrix}
+\frac 1{u_1 - v_1} & \frac 1{u_1 - v_1 \tau} & \cdots & \frac 1{u_1-v_1 \tau^{n-1}}\\
+\frac 1{u_1 - v_1 \tau^{-1}}  & \frac 1{u_1 - v_1} & \cdots & \frac 1{u_1-v_1 \tau^{n-2}}\\
+\vdots & & \vdots \\
+\frac 1{u_1 - v_1 \tau^{1-m}}  & \frac 1{u_1 - v_1 \tau^{2-m}} & \cdots & \frac 1{u_1-v_1 \tau^{n-m}}
+\end{bmatrix},$$
+where $\mD_{\tau}$ is diagonal with entries
+$(1,\tau,\tau^{2},\dots,\tau^{m-1})$, and where the left-hand matrix
+is Toeplitz. In the reconstruction formula~\eqref{eq:recA}, the
+diagonal matrix $\mD_\tau$ commutes with all matrices $\mD_{g_i}$, so
+we can take it out of the sum. Hence, we replaced $\alpha$ evaluations
+/ interpolations at geometric progressions by $\alpha$ product by
+Toeplitz matrices, each of which can be done in a single polynomial
+multiplication. The cost for a matrix-vector product by $\mA$ remains
+$O(\alpha \M(p'))$, but the constant in the big-O is lower: for $m=n$,
+using middle product techniques~\cite{HaQuZi04,BoLeSc03,BoSc05}, the
+cost goes down from $3\alpha \M(p') +O(\alpha p')$ to $\alpha \M(p')
++O(\alpha p')$. The improvement applies for the products at
+both Steps~{\bf 2} and~{\bf 4}.
+
+If $\vu$ and $\vv$ are chosen as geometric progressions (with the same
+ratio) at the top-level, this will remain the case for all recursive
+calls. Choosing $i=\lceil p/2\rceil$ balances the costs of the two
+recursive calls; as a result, the overall runtime of the algorithm is
+$O(\alpha^2 \M(p') \log(p))$.
+
+The second improvement reduces the cost for multiplication 
+to $O(\alpha^{\omega-1} \M(p')\log(p'))$.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Hermite-Pad\'e approximants}
+
+\begin{pbm}
+Let $\bF=(f_1,\dots,f_s)$ be in $\K[x]$,   
+\end{pbm}
+
+\begin{pbm}
+Let $f$ be in $\K[x]$.
+\end{pbm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Reduction to Cauchy systems}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Solving Structured Systems}
+Given a prime $p$, an invertible structured matrix $\mA \in (\mathbb{Z}\mathbin{/}{p^{t}})^{n \times m}$, and 
+a vector $b \in (\mathbb{Z}\mathbin{/}{p^{t}})^n$, we review three algorithms that solve the equation
+$\mA x = b$ (mod $p^{t}$) where $t$ is a power of 2 by lifting.
+
+\subsection{The divide and conquer algorithm}
+\noindent{\textbf{DAC($\mA$, $b$, $p$, $t$)}}:
+
+\smallskip\noindent{\bf 0.} If $t = 1$, return $\mA ^ {-1} * b$ (mod $p$)
+
+\smallskip\noindent{\bf 1.} Compute $x_0 := $ DAC($\mA$, $b$, $p$, $\frac{t}{2}$)
+
+\smallskip\noindent{\bf 2.} Compute $r_0 := \mA * x_0 - b$ (mod $p^t$) and $r_1 := r_0 \mathbin{/} p^{\frac{t}{2}}$ 
+
+\smallskip\noindent{\bf 3.} Compute $x_1 := $ DAC($\mA$, $r_1$, $p$, $\frac{t}{2}$)
+
+\smallskip\noindent{\bf 4.} Return $x_0 - p^{\frac{t}{2}} * x_1$ (mod $p^t$)
+
+\subsection{Dixon's algorithm}
+\noindent{\textbf{Dixon($\mA$, $b$, $p$, $t$)}}:
+
+\smallskip\noindent{\bf 0.} Compute $\mM := \mA^{-1}$ (mod $p$)
+
+\smallskip\noindent{\bf 1.} Compute $x_0 := \mM * b$ (mod $p$)
+
+\smallskip\noindent{\bf 2.} for $i \in [1, t-1]$:
+\begin{itemize}
+	\item Compute $b := (b - \mA * x_{i-1}) \mathbin{/} p$ 
+	\item Compute $x_i := \mM * b$ (mod $p$)
+\end{itemize}
+
+\smallskip\noindent{\bf 3.} Return $\sum_{i=0}^{t-1} p^i * x_i $
+
+\subsection{Newton iteration}
+Let $\mG$ and $\mH$ be the generators of $\mA$.
+
+\noindent{\textbf{Newton($\mG$, $\mH$, $p$, $t$)}}:
+
+\smallskip\noindent{\bf 0.} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Solving Block Toeplitz Systems}
+Let $x \in \mathbb{Q}^{m}$, $\alpha = (\alpha_1, \cdots, \alpha_b) \in \mathbb{N}^b$, and let 
+$\mM \in \mathbb{Q}^{n \times m}$ be a block Toeplitz matrix with $b$ blocks such that for $i \in [1,b]$,
+the $i^{th}$ block has $n \times \alpha_i$ entries. We will outline an algorithm that finds a solution to $Mx = 0$.
+
+\subsection{Systems with one dimension kernel space}
+First, we look at a specific case where $m = $ rank($\mM$)$-1$.
+
+\smallskip\noindent{\bf 0.} Choose a prime $p$ and compute $\mA := \mX \mM \mY$ (mod $p$) 
+for choices of $\mX$ and $\mY$ mentioned above such that $\mA$ is a Cauchy matrix and has generic rank profile.
+Let $b$ be the last column of $\mA$.
+
+\smallskip\noindent{\bf 1.} Let $d := $ rank($\mM$), $\mA_{d}$ be the $d \times d$ top-left submatrix of $\mA$,
+and $b_d$ be a vector of the first $d$ entries of $b$. By assumption, $\mA_{d}$ is invertible.
+
+\smallskip\noindent{\bf 2.} Set $t := 1$. Compute $x := \mA_d^{-1} * b_d$ (mod $p$) and
+$y := Y*(x_1, \cdots, x_d, -1)$ (mod $p$). Divide every entry of $y$ by the first non-zero entry of $y$.
+
+\smallskip\noindent{\bf 3.} While we cannot apply rational reconstruction to the entries of $y$ or after applying rational
+reconstruction to $y$, $M*y \ne 0$ (mod $p'$) for some prime $p'$:
+\begin{itemize}
+	\item Set $t := t*2$ and recompute $\mM,\mX,\mY,\mA, \mA_{d}, b_d$ (mod $p^t$)
+	\item Compute $r := A_d * x - b_d$ (mod $p^t$) and $r_1 := r \mathbin{/} p^{\frac{t}{2}}$
+	\item Call one of the three algorithms in section 4 to find $x'$ such that $\mA_d * x' = r_1$ (mod $p^{\frac{t}{2}}$)
+	\item Set $x := x - p^{\frac{t}{2}} * x'$, $y := Y*(x_1,\cdots,x_d,-1)$ (mod $p^{t}$), and divide every entry of $y$ by the first non-zero entry of $y$.
+\end{itemize}
+ 
+\smallskip\noindent{\bf 4.} Apply rational reconstruction to every entry of $y$ and return the result.
+
+\subsection{General block Toeplitz systems}
+For a general block Toeplitz system, we want to preprocess $\mM$ to produce a matrix $\mM'$ such that the rank($\mM'$) $= m-1$.
+We do this by creating a block Toeplitz matrix $\mM''$ of size $n' \times m$, where $n' = m-1-$ rank($\mM$). Every block of $\mM''$
+is lower triangluar and the $i^{th}$ block
+
+\subsection{Solution to Hermite-Pad\'e approximant}
+If $\mM$ is algebraic, that is for $i \in [1,b]$ and $f \in \mathbb{Q}[x]$, the $i^{th}$ block of $\mM$ 
+is composed of coefficients of $f^{i-1}$, then $x$ is a Hermite-Pad\'e approximant of $f$ and type $\alpha$.
+
+\bibliographystyle{plain}
+{\scriptsize \bibliography{structured}}
+
+
+
+\end{document}
