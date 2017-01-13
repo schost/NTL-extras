@@ -109,12 +109,12 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
   sizeY = Y_int.length();
   original_sizeX = sizeX;
   
-  Mat<zz_p> mat;
+  //Mat<zz_p> mat;
   
   if (sizeY -rank != 1){
     hankel_matrices.append(increase_rank(sizeY-rank-1));
     MH = mosaic_hankel(hankel_matrices);
-    to_dense(mat, MH);
+    //to_dense(mat, MH);
     //cout << "new mat: " << mat << endl;
   }
   else

@@ -14,6 +14,8 @@ NTL_CLIENT
 void rand_gen(Vec<ZZX> &f, Vec<long> &type, long& nbits, char* filename){
 	ifstream in{filename};
 	in >> nbits;
+	long defect;
+	in >> defect;
 	
 	string s;
 	getline(in, s);
@@ -28,7 +30,7 @@ void rand_gen(Vec<ZZX> &f, Vec<long> &type, long& nbits, char* filename){
 		
 	// randomly generating the entries
 	ZZ entry;
-	long nrows = ncols - 10;
+	long nrows = ncols - defect;
 	for (long j = 0; j < blocks; j++){
 		ZZX y;
 		for (long i = 0; i < nrows; i++){
@@ -90,7 +92,7 @@ int main(int argc, char **argv){
     return 0;
   }
 
-	long mode = stoi(argv[2]);
+  long mode = stoi(argv[2]);
   Vec<ZZX> f;
   Vec<long> type;
   long nbits;

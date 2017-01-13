@@ -335,7 +335,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   //cout << "x: " << x << endl;
   for (long int i = 0; i < x.length(); i++)
     if (x[i] != ZZ_p(0)){
-    	cout << "failed p2" << endl;
+    	//cout << "failed p2" << endl;
     	//cout << "sol: " << sol_ZZ << endl;
       return false;
     }
@@ -412,7 +412,7 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   extractor[rank] = 1; // just for now, take the last column
 
   Vec<ZZ_p> b = mulA_right(extractor); // b is the last column of A
-  cout << "b: " << b << endl;
+  //cout << "b: " << b << endl;
   Vec<ZZ> x_ZZ, b_ZZ;
   b_ZZ = conv<Vec<ZZ>> (b);
   if (mode == 0)
