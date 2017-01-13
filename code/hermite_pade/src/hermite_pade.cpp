@@ -335,7 +335,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   //cout << "x: " << x << endl;
   for (long int i = 0; i < x.length(); i++)
     if (x[i] != ZZ_p(0)){
-    	//cout << "failed p2" << endl;
+    	cout << "failed p2" << endl;
     	//cout << "sol: " << sol_ZZ << endl;
       return false;
     }
